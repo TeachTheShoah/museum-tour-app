@@ -26,7 +26,7 @@
     <div class="flex justify-between items-start w-full">
       <!-- Logo -->
       <div class="flex items-start">
-        <span class="whitespace-nowrap font-bold text-base lg:text-5xl text-black dark:text-white">
+        <span class="whitespace-nowrap font-bold text-base lg:text-3xl text-black dark:text-white">
           {#if locale === "EN"}
             SWIGGI & TEACH THE SHOAH PRESENT:
           {/if}
@@ -60,13 +60,13 @@
               <path d="M12 22c2.667-2.424 4-5.758 4-10s-1.333-7.576-4-10c-2.667 2.424-4 5.758-4 10s1.333 7.576 4 10z"></path>
               <path d="M2.5 9h19M2.5 15h19"></path>
             </svg>
-            <span class="font-bold text-xl text-black">{locale}</span>
+            <span class="font-bold text-base text-black">{locale}</span>
           </button>
           <a
             href="https://www.teachtheshoah.org/donate/"
             target="_blank"
             rel="noopener noreferrer"
-            class="px-4 py-2 bg-primary-400 text-white text-xl font-bold hover:bg-primary-500"
+            class="px-4 py-2 bg-primary-400 text-white text-base font-bold hover:bg-primary-500"
           >
             Support Us
           </a>
@@ -75,7 +75,7 @@
     </div>
 
     <div class="flex flex-wrap w-full">
-      <span class="font-bold text-3xl lg:text-7xl text-black dark:text-white">
+      <span class="font-bold text-3xl lg:text-5xl text-black dark:text-white">
         {#if locale === "EN"}
           <span class="whitespace-nowrap">THE VIENNA HOLOCAUST</span>
           {#if innerWidth <= 500}

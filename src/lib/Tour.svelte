@@ -43,13 +43,13 @@
           >
             <div class="flex flex-col justify-between h-full">
               <!-- Title -->
-              <h3 class="text-base text-2xl lg:text-6xl font-bold mt-8 lg:mt-20">
+              <h3 class="text-base text-2xl lg:text-4xl font-bold mt-8 lg:mt-20">
                 <p>{tour.title}</p>
                 {#if tour.subtitle}
-                  <p class="italic text-2xl lg:text-6xl">{tour.subtitle}</p>
+                  <p class="italic text-2xl lg:text-4xl">{tour.subtitle}</p>
                 {/if}
               </h3>
-              <div class="mb-8 lg:mb-20 font-bold text-2xl lg:text-4xl text-gray-600">
+              <div class="mb-8 lg:mb-20 font-bold text-2xl lg:text-2xl text-gray-600">
                 <p>{tour.dateRange}</p>
               </div>
             </div>
@@ -60,15 +60,15 @@
           >
             <div class="flex flex-col justify-between h-full">
               <!-- Title -->
-              <h3 class="text-base text-2xl lg:text-6xl font-bold mt-8 lg:mt-20">
+              <h3 class="text-base text-2xl lg:text-4xl font-bold mt-8 lg:mt-20">
                 <p>{tour.title}</p>
                 {#if tour.subtitle}
-                  <p class="italic text-2xl lg:text-6xl">{tour.subtitle}</p>
+                  <p class="italic text-2xl lg:text-4xl">{tour.subtitle}</p>
                 {/if}
               </h3>
 
               <!-- Date Range -->
-              <div class="mb-8 lg:mb-20 font-bold text-2xl lg:text-4xl text-gray-600">
+              <div class="mb-8 lg:mb-20 font-bold text-2xl lg:text-2xl text-gray-600">
                 <p>{tour.dateRange}</p>
               </div>
             </div>

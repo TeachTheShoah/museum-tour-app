@@ -10,7 +10,7 @@
   import Footer from '$lib/Footer.svelte'
 </script>
 
-<div class="relative flex flex-col pb-48 lg:pb-0" >
+<div class="relative flex flex-col" >
   <!-- Header -->
   <Navbar/>
   <div class="flex-grow">
