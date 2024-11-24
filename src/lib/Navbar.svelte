@@ -299,7 +299,7 @@
             showLocateMeSubmenu = false;
             }
           }
-          class="py-2 text-black text-4xl font-bold hover:underline"
+          class="py-2 text-black text-2xl font-bold hover:underline"
           aria-expanded={showExhibitSubmenu}
         >
           Exhibits
@@ -310,7 +310,7 @@
             showExhibitSubmenu = false;
             } 
           }
-          class="py-2 text-black text-4xl font-bold hover:underline"
+          class="py-2 text-black text-2xl font-bold hover:underline"
           aria-expanded={showLocateMeSubmenu}
         >
           Locate Me
@@ -320,7 +320,7 @@
             href="https://www.teachtheshoah.org/"
             target="_blank"
             rel="noopener noreferrer"
-            class="flex items-center py-2 text-black text-4xl font-bold group-hover:underline"
+            class="flex items-center py-2 text-black text-2xl font-bold group-hover:underline"
           >
             Learn More
             <svg
@@ -349,10 +349,10 @@
   <div
     class="bg-white w-full px-8 md:px-16 lg:px-32 mb-12 z-20 mt-4"
   >
-    <p class="font-bold text-4xl text-gray-500">
+    <p class="font-bold text-2xl text-gray-500">
       Plan Your Visit 
     </p>
-    <p class="mt-4 text-4xl">
+    <p class="mt-4 text-2xl">
       Our Holocaust museum tours can exclusivly be found in Vienna, Austria. <br class="mt-0.5"/>
       There are currently two tours available: Leopoldstadt and Inner Stadt. <br class="mt-0.5"/>
       Please enjoy our thoughtfully curated tours, designed to provide an authentic and educational experience.
@@ -376,10 +376,10 @@
   <div
     class="bg-white w-full px-8 md:px-16 lg:px-32 mb-12 z-20 mt-4 "
   >
-    <p class="font-bold text-4xl text-gray-500">
+    <p class="font-bold text-2xl text-gray-500">
       Where Am I?
     </p>
-    <p class="mt-4 text-4xl">
+    <p class="mt-4 text-2xl">
       You are closest to the Leopoldstadt tour :&#41;
     </p>
   </div>
