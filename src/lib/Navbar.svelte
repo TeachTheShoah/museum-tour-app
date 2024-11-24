@@ -291,7 +291,7 @@
       {/if}
 
     {:else}
-      <div class="flex justify-start space-x-16 w-full mt-6 mb-4">
+      <div class="flex justify-start space-x-16 w-full mt-2 mb-1">
         <!-- Exhibits with Submenu -->
         <button
           onclick={() => {
