@@ -1,12 +1,23 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="font-gothic">
 	<head>
 		<meta charset="utf-8" />
-		<link rel="icon" href="%sveltekit.assets%/favicon.png" />
+		<link rel="icon" href="%sveltekit.assets%/favicon.ico" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		%sveltekit.head%
 	</head>
-	<body data-sveltekit-preload-data="hover">
+	<body class="bg-light dark:bg-dark" data-sveltekit-preload-data="hover">
 		<div style="display: contents">%sveltekit.body%</div>
 	</body>
 </html>
+
+<style>
+	body, html {
+	overflow-x: hidden;
+	overflow-y: auto;
+  /* overscroll-behavior: none;
+  -webkit-overflow-scrolling: auto; Disable smooth bounce scrolling */
+	}
+</style>
+
+

@@ -1,3 +1,24 @@
 @import 'tailwindcss/base';
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
+
+@font-face {
+  font-family: "Fette Fraktur";
+  src: url("/FetteUNZFraktur.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "News Gothic";
+  src: url("/NewsGothicStd-Bold.woff") format("woff");
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "News Gothic";
+  src: url("/NewsGothicStd.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
