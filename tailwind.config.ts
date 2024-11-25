@@ -14,11 +14,6 @@ export default {
         fette: ["Fette Fraktur"],
         gothic: ["News Gothic"],
       },
-      fontSize: {
-        clamp: "clamp(1.1rem, 4vw, 2rem)",
-        clampl: "clamp(0.85rem, 4vw, 2.5rem)",
-        clampxl: "clamp(1.25rem, 4vw, 3rem)",
-      },
       colors: {
         // flowbite-svelte
         primary: {

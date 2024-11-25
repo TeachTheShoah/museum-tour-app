@@ -5,6 +5,7 @@
   let showExhibitMobileMenu = $state(false);
   let showLocateMeMobileMenu = $state(false);
   let locale = $state("EN");
+  let { innerWidth } = $props();
 
   function toggleLocale() {
     if (locale === "EN") {
@@ -13,12 +14,9 @@
       locale = "EN"
     }
   }
-
-  let innerWidth = $state(390);
-  $inspect(innerWidth);
 </script>
 
-<svelte:window bind:innerWidth/>
+
 
 <nav class="mt-8 lg:mt-12 mb-2 bg-white text-gray-500 border-gray-200 divide-gray-200 px-4 sm:pl-8 md:pl-16 lg:pl-32 w-full z-20">
   <div class="flex flex-col mb-1 lg:mb-0">
@@ -26,20 +24,31 @@
     <div class="flex justify-between items-start w-full">
       <!-- Logo -->
       <div class="flex items-start">
-        <span class="whitespace-nowrap font-bold text-base lg:text-3xl text-black dark:text-white">
-          {#if locale === "EN"}
-            SWIGGI & TEACH THE SHOAH PRESENT:
-          {/if}
-          {#if locale === "DE"}
-            SWIGGI & TEACH THE SHOAH PRÄSENTIEREN:
-          {/if}
-        </span>
+        {#if innerWidth > 380}
+          <span class="whitespace-nowrap font-bold text-base lg:text-3xl text-black">
+            {#if locale === "EN"}
+              SWIGGI & TEACH THE SHOAH PRESENT:
+            {/if}
+            {#if locale === "DE"}
+              SWIGGI & TEACH THE SHOAH PRÄSENTIEREN:
+            {/if}
+          </span>
+        {:else}
+          <span class="whitespace-nowrap font-bold text-sm text-black ml-2">
+            {#if locale === "EN"}
+              SWIGGI & TEACH THE SHOAH PRESENT:
+            {/if}
+            {#if locale === "DE"}
+              SWIGGI & TEACH THE SHOAH PRÄSENTIEREN:
+            {/if}
+          </span>
+        {/if}
       </div>
 
-      {#if innerWidth > 500}
-        <div class="flex me-4">
+      {#if innerWidth > 540}
+        <div class="flex -mt-4">
           <button
-            class="flex items-center space-x-1 px-4 py-2 bg-gray-200 hover:bg-gray-300"
+            class="flex items-center space-x-1 px-2 lg:px-4 py-1 lg:py-2 bg-gray-200 hover:bg-gray-300 "
             aria-label="Change Locale"
             onclick={toggleLocale}
           >
@@ -60,13 +69,13 @@
               <path d="M12 22c2.667-2.424 4-5.758 4-10s-1.333-7.576-4-10c-2.667 2.424-4 5.758-4 10s1.333 7.576 4 10z"></path>
               <path d="M2.5 9h19M2.5 15h19"></path>
             </svg>
-            <span class="font-bold text-base text-black">{locale}</span>
+            <span class="font-bold text-xs lg:text-base text-black">{locale}</span>
           </button>
           <a
             href="https://www.teachtheshoah.org/donate/"
             target="_blank"
             rel="noopener noreferrer"
-            class="px-4 py-2 bg-primary-400 text-white text-base font-bold hover:bg-primary-500"
+            class="flex items-center px-2 lg:px-4 py-1 lg:py-2 bg-primary-400 text-white text-xs lg:text-base font-bold hover:bg-primary-500"
           >
             Support Us
           </a>
@@ -75,14 +84,24 @@
     </div>
 
     <div class="flex flex-wrap w-full">
-      <span class="font-bold text-3xl lg:text-5xl text-black dark:text-white">
+      <span class="font-bold text-black">
         {#if locale === "EN"}
-          <span class="whitespace-nowrap">THE VIENNA HOLOCAUST</span>
-          {#if innerWidth <= 500}
+          {#if innerWidth > 380}
+            <span class="whitespace-nowrap text-3xl lg:text-5xl">THE VIENNA HOLOCAUST</span>
+          {:else}
+            <span class="whitespace-nowrap text-2xl ml-2">THE VIENNA HOLOCAUST</span>
+          {/if}
+          {#if innerWidth <= 540}
             <div class="flex items-center">
-              <span class="whitespace-nowrap">
-                REMEMBRANCE TOURS
-              </span>
+              {#if innerWidth > 380}
+                <span class="whitespace-nowrap text-3xl lg:text-5xl">
+                  REMEMBRANCE TOURS
+                </span>
+              {:else}
+                <span class="whitespace-nowrap text-2xl ml-2">
+                  REMEMBRANCE TOURS
+                </span>
+              {/if}
               <button
                 aria-label="Toggle Mobile Menu" 
                 onclick={() => { 
@@ -98,22 +117,22 @@
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x mb-2 ml-2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                 {/if}
               </button>
-
           </div>
           {:else}
-            <span class="whitespace-nowrap">
-              REMEMBRANCE TOURS
+            <span class="whitespace-nowrap text-3xl lg:text-5xl">
+              &nbsp;REMEMBRANCE TOURS
             </span>
           {/if}
-
         {/if}
         {#if locale === "DE"}
-          DIE WIENER HOLOCAUST-ERINNERUNGSTOUREN
+          <span class="whitespace-nowrap text-3xl lg:text-5xl">
+            DIE WIENER HOLOCAUST-ERINNERUNGSTOUREN
+          </span>
         {/if}
       </span>
     </div>
 
-    {#if innerWidth <= 500}
+    {#if innerWidth <= 540}
       {#if showMobileMenu && !(showExhibitMobileMenu || showLocateMeMobileMenu)}
         <div class="flex flex-col items-start w-full">
           <!-- Exhibits with Submenu -->

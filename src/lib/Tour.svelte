@@ -1,14 +1,5 @@
 <script lang="ts">
-  export let tours: Array<{
-    title: string;
-    subtitle: string;
-    dateRange: string;
-    href: string;
-    image: string;
-    hoverImage: string;
-    hoverBackgroundColor: string;
-  }>;
-  
+  let { innerWidth, tours } = $props()
 </script>
 
 <div class="grid border-t border-b border-black divide-y divide-black">
@@ -37,42 +28,79 @@
               loading="lazy"
             />
           </div>
-
-          <div
-            class="w-1/2 lg:w-2/5 h-full px-8 lg:px-16 flex-shrink-0 group-active:border-0 group-hover:border-0 border-s-2 border-black"
-          >
-            <div class="flex flex-col justify-between h-full">
-              <!-- Title -->
-              <h3 class="text-base text-2xl lg:text-4xl font-bold mt-8 lg:mt-20">
-                <p>{tour.title}</p>
-                {#if tour.subtitle}
-                  <p class="italic text-2xl lg:text-4xl">{tour.subtitle}</p>
-                {/if}
-              </h3>
-              <div class="mb-8 lg:mb-20 font-bold text-2xl lg:text-2xl text-gray-600">
-                <p>{tour.dateRange}</p>
+          {#if innerWidth > 380}
+            <div
+              class="w-1/2 lg:w-2/5 h-full px-8 lg:px-16 flex-shrink-0 group-active:border-0 group-hover:border-0 border-s-2 border-black"
+            >
+              <div class="flex flex-col justify-between h-full">
+                <!-- Title -->
+                <h3 class="text-base text-2xl lg:text-4xl font-bold mt-8 lg:mt-20">
+                  <p>{tour.title}</p>
+                  {#if tour.subtitle}
+                    <p class="italic text-2xl lg:text-4xl">{tour.subtitle}</p>
+                  {/if}
+                </h3>
+                <div class="mb-8 lg:mb-20 font-bold text-2xl lg:text-2xl text-gray-600">
+                  <p>{tour.dateRange}</p>
+                </div>
               </div>
             </div>
-          </div>
+          {:else}
+            <div
+              class="w-1/2 lg:w-2/5 h-full px-4 flex-shrink-0 group-active:border-0 group-hover:border-0 border-e-2 border-black"
+            >
+              <div class="flex flex-col justify-between h-full ml-2">
+                <!-- Title -->
+                <h3 class="text-base text-base font-bold mt-8">
+                  <p>{tour.title}</p>
+                  {#if tour.subtitle}
+                    <p class="italic text-xl">{tour.subtitle}</p>
+                  {/if}
+                </h3>
+                <div class="mb-8 font-bold text-base text-gray-600">
+                  <p>{tour.dateRange}</p>
+                </div>
+              </div>
+            </div>
+          {/if}
         {:else}
-          <div
-            class="w-1/2 lg:w-2/5 h-full px-8 md:px-16 lg:px-32 flex-shrink-0 group-active:border-0 group-hover:border-0 border-e-2 border-black"
-          >
-            <div class="flex flex-col justify-between h-full">
-              <!-- Title -->
-              <h3 class="text-base text-2xl lg:text-4xl font-bold mt-8 lg:mt-20">
-                <p>{tour.title}</p>
-                {#if tour.subtitle}
-                  <p class="italic text-2xl lg:text-4xl">{tour.subtitle}</p>
-                {/if}
-              </h3>
+          {#if innerWidth > 380}
+            <div
+              class="w-1/2 lg:w-2/5 h-full px-8 md:px-16 lg:px-32 flex-shrink-0 group-active:border-0 group-hover:border-0 border-e-2 border-black"
+            >
+              <div class="flex flex-col justify-between h-full">
+                <!-- Title -->
+                <h3 class="text-base text-2xl lg:text-4xl font-bold mt-8 lg:mt-20">
+                  <p>{tour.title}</p>
+                  {#if tour.subtitle}
+                    <p class="italic text-2xl lg:text-4xl">{tour.subtitle}</p>
+                  {/if}
+                </h3>
 
-              <!-- Date Range -->
-              <div class="mb-8 lg:mb-20 font-bold text-2xl lg:text-2xl text-gray-600">
-                <p>{tour.dateRange}</p>
+                <!-- Date Range -->
+                <div class="mb-8 lg:mb-20 font-bold text-2xl lg:text-2xl text-gray-600">
+                  <p>{tour.dateRange}</p>
+                </div>
               </div>
             </div>
-          </div>
+          {:else}
+            <div
+              class="w-1/2 lg:w-2/5 h-full px-4 flex-shrink-0 group-active:border-0 group-hover:border-0 border-e-2 border-black"
+            >
+              <div class="flex flex-col justify-between h-full ml-2">
+                <!-- Title -->
+                <h3 class="text-base text-base font-bold mt-8">
+                  <p>{tour.title}</p>
+                  {#if tour.subtitle}
+                    <p class="italic text-xl">{tour.subtitle}</p>
+                  {/if}
+                </h3>
+                <div class="mb-8 font-bold text-base text-gray-600">
+                  <p>{tour.dateRange}</p>
+                </div>
+              </div>
+            </div>
+          {/if}
 
           <!-- Right Section: Image -->
           <div class="h-full w-1/2 lg:w-3/5 relative">

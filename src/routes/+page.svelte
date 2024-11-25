@@ -8,13 +8,17 @@
   import Tour from '$lib/Tour.svelte'
   import About from '$lib/About.svelte'
   import Footer from '$lib/Footer.svelte'
+  let innerWidth = $state(390);
 </script>
+
+<svelte:window bind:innerWidth/>
 
 <div class="relative flex flex-col" >
   <!-- Header -->
-  <Navbar/>
+  <Navbar {innerWidth}/>
   <div class="flex-grow">
     <Tour
+      {innerWidth}
       tours={[
         {
           title: 'District 2 Tour:',
