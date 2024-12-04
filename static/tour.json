@@ -1,0 +1,112 @@
+[
+	{
+		"id": 2,
+		"district": "Leopoldstadt",
+		"stops": 8,
+		"walking_distance": 2,
+		"walking_time": 30,
+		"center_coords": {
+			"lat": 48.21774803393539,
+			"lng": 16.380806841905153
+		},
+		"locations": [
+			{
+				"location_id": 2.1,
+				"location_name": "Former Home of Renata Krochmal",
+				"address": "Große Schiffgasse 2",
+				"occupant": "Renata Krochmal",
+				"brief_description": "In the 1930s, Grosse Schiffgasse 2 was the home of the Kromchal family, Yaakov and Amalie Krochmal-Kolboshover, and their 3 children, Siegfried, Rénate and Liane. They fled flee their home in 1938 to Belgium but were subsequently arrested and imprisoned in the Rivesaltes concentration camp",
+				"biography": "Eight-year-old Rénate and six-year-old Liane Krochmal, who lived in the children's home in Izieu, France, were deported to their deaths on 13 April 1944. In 1938, Yaakov and Amalie Krochmal-Kolboshover fled from Vienna, Austria to Belgium with their 3 children, Siegfried (b. 1931), Rénate (b. 1935) and Liane (b. 1937). Jacob had a brother and a sister in the US, but all his attempts to obtain entry permits for himself and his family proved unsuccessful. The Krochmal family was arrested and interned in the Rivesaltes concentration camp, where Siegfried perished.  His parents were transferred to Drancy and in September 1942, they were deported to Auschwitz, where they were murdered. It is not known when and how Rénate and Liane came to the children's home in Izieu, but they were caught in the raid, and deported with all the other children in the home to the extermination camps in Eastern Europe, where they were murdered.",
+				"coords": {
+					"lat": 48.215732984277956,
+					"lng": 16.37537687797315
+				}
+			},
+			{
+				"locationId": 2.2,
+				"location_name": "Schiffschul",
+				"address": "Große Schiffgasse 8",
+				"occupant": "Schiffschul",
+				"brief_description": "Schiffschul was the former Orthodox congregation and synagogue destroyed by the Nazis on Kristallnacht in 1938.",
+				"biography": "The Schiffschul was named after the street  Große Schiffgasse in which it was located. From 1864 to 1938 it was the center of strictly orthodox, Torah-observant Judaism in Vienna. The synagogue, which was inaugurated in 1864, was joined by other institutions, such as a teaching house, a religious school, Orthodox Jewish associations, a kosher bakery and a kosher meat shop. The Schiffschul was mainly visited by Hungarian and Slovakian Jews who had immigrated from the crown land of Hungary. As early as October 1938, there were riots against synagogues, prayer houses and Jewish institutions. On October 15, 1938, some members of the SA stormed into the Schiffschul, desecrated the Torah shrine, destroyed furnishings and took away cult objects. During the November pogrom on November 10, 1938, the Schiffschul was completely destroyed by arson and hand grenades.",
+				"coords": {
+					"lat": 48.21634079932238,
+					"lng": 16.37563762593169
+				}
+			},
+			{
+				"locationId": 2.3,
+				"location_name": "Julius Ofner Denkmal",
+				"address": "Große Schiffgasse 2",
+				"occupant": "Julius Ofner",
+				"brief_description": "The Denkmal, or monument, to Austrian lawyer Julius Ofner was first erected in 1932 in Taborstraße. It was removed by the Nazis in 1943 and later permanently rebuilt in 1954",
+				"biography": "Julius Ofner was born in 1845 in Bohemia to a Jewish merchant and farmer. He grew up to become a lawyer, social politician, legal philosopher, member of the House of Representatives of the Vienna Imperial Council and an important representative of liberalism in Austria. Ofner played a key role in the amendment of the General Civil Code, in the development of labor law (including the ban on child labor, Sunday rest regulations, the admission of women to certain professions, care for released prisoners) and in the reform of the criminal law . These reformsc were unofficially named 'Lex Ofner' after him.  Thanks to his contributions, a monument was erected in his honor in 1932.",
+				"coords": {
+					"lat": 48.217161813990174,
+					"lng": 16.38068770010917
+				}
+			},
+			{
+				"locationId": 2.4,
+				"location_name": "Former Home of H. Finkelbloch",
+				"address": "Taborstraße 23",
+				"occupant": "Helmuth Finkelbloch",
+				"brief_description": "Hellmuth Finkelbloch, along with his entire family, was deported on Nov 23, 1941 to Kowno, where they were murdered shortly afterwards.",
+				"biography": "Hellmuth Finkelbloch, along with his entire family, was deported on Nov 23, 1941 to Kowno, where they were murdered shortly afterwards.",
+				"coords": {
+					"lat": 48.217534742224615,
+					"lng": 16.38185301058902
+				}
+			},
+			{
+				"locationId": 2.5,
+				"location_name": "Former Home of Georg Agatstein",
+				"address": "Glockengasse 4",
+				"occupant": "Georg Agatstein",
+				"brief_description": "Georg Agatstein lived on the Rotensterngasse 7 together with his maternal grandfather Salomom Beer.",
+				"biography": "Georg Karl and his parents were born in Vienna. His father, Josef Agatstein, handed in a request to migrate and so did his aunt Gisele Beer. Georg lived with his maternal grandmother Salomon Beer prior to their deportation on the 24th of Sep 1942.",
+				"coords": {
+					"lat": 48.21811349740669,
+					"lng": 16.3821363970962
+				}
+			},
+			{
+				"locationId": 2.6,
+				"location_name": "Former Home of Manfred Papo",
+				"address": "Rotensterngasse 7",
+				"occupant": "Manfred Papo",
+				"brief_description": "Dr. Manfred Papo was Chief Rabbi of the Sephardic Community in Vienna. He was imprisoned in Dachau and escaped to the UK where he served as Sephardic Rabbi in Withington, Manchester. He was able to return to Vienna in 1966 where he rests today.",
+				"biography": "`Dr. Manfred Papo (1898-1966) was Chief Rabbi of the Sephardic Community in Vienna - and an active teacher. He was imprisoned in Dachau and managed toescape to UK, where he served as Sephardic Rabbi in Withington, Manchester, and from 1944-1964 as Rabbi of the Sephardic Community in Salisbury, Rhodesia. Returned to Vienna and passed away on the 15th of May 1966. He is buried in Vienna.",
+				"coords": {
+					"lat": 48.21658949395205,
+					"lng": 16.386699825931668
+				}
+			},
+			{
+				"locationId": 2.7,
+				"location_name": "Former Home of Albert Berger",
+				"address": "Rotensterngasse 37",
+				"occupant": "Albert Rubin Berger",
+				"brief_description": "Albert Rubin Berger was only 3 years old when he and his family were deported to Opale, Poland in 1941, where they perished.",
+				"biography": "On May 19, 1938 Albert's father Johann Berger handed the authorities in Vienna a formal request for emigration to Palestine (British Mandate). The request included himself, his wife, his newborn son Albert and his sister-in-law. He listed several friends in Palestine who would support him. The request was apparently not granted, because the family was deported to Opale, Poland and perished there. One can imagine the stress the family went through waiting for the answer to their request which, if granted, would have saved their lives.",
+				"coords": {
+					"lat": 48.22010716020932,
+					"lng": 16.383484439339778
+				}
+			},
+			{
+				"locationId": 2.8,
+				"location_name": "Former Home of Dora Schwam",
+				"address": "Pazmanitengasse 4",
+				"occupant": "Dora Schwam",
+				"brief_description": "In 1941, Dora Schwam's family was deported from Vienna to Poland's Lodz ghetto.",
+				"biography": "Dora, together with her mother Jenta and brother Max, was deported from their Vienna home to the Lodz ghetto (Litzmannstadt) in Poland in November 1941. The terrible conditions in the Lodz ghetto are well known and one can only imagine the hardship Dora, her mother and brother went through. The precise circumstances of her death are not known but she did not survive the Holocaust. Her mother was eventually transported to the Chelmno camp and murdered there in May 1942. It is possible that Dora and Max met the same fate.",
+
+				"coords": {
+					"lat": 48.220405885114936,
+					"lng": 16.384570868260532
+				}
+			}
+		]
+	}
+]

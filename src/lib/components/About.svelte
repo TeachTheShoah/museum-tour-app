@@ -16,7 +16,7 @@
       </div>
     </div>
   </div>
-  <div class="hidden lg:block w-0 lg:w-1/3">
+  <div class="hidden w-0 lg:w-1/3 lg:block">
     <img
       src={image} 
       alt="Simon Wiesenthal Hero"
@@ -25,3 +25,7 @@
     />
   </div>
 </div>
+
+<style>
+  
+</style>

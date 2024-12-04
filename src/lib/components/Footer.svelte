@@ -1,5 +1,5 @@
 <script lang="ts">
-  export let links = [
+  let links = [
     {
       href: "/",
       ariaLabel: "Home",

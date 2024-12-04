@@ -1,10 +1,35 @@
 <script lang="ts">
-  let { innerWidth, tours } = $props()
+  import Zone1Cover from '$lib/assets/zone-1-cover.jpg'
+  import Zone1CoverBW from '$lib/assets/zone-1-cover-bw.jpg'
+  import Zone2Cover from '$lib/assets/zone-2-cover.jpg'
+  import Zone2CoverBW from '$lib/assets/zone-2-cover-bw.jpg'
+  let { innerWidth } = $props()
+  let tours = [
+        {
+          title: 'District 2 Tour:',
+          subtitle: 'Leopoldstadt',
+          dateRange: 'Available Now',
+          href: '/tour/leopoldstadt',
+          image: Zone2CoverBW,
+          hoverImage: Zone2Cover,
+          hoverBackgroundColor: '#5e96ff',
+        },
+        {
+          title: 'District 1 Tour:',
+          subtitle: 'Inner Stadt',
+          dateRange: 'Coming Soon...',
+          href: '/tour/innere-stadt',
+          image: Zone1CoverBW,
+          hoverImage: Zone1Cover,
+          hoverBackgroundColor: '#6bdcc5',
+        },
+      ]
 </script>
 
 <div class="grid border-t border-b border-black divide-y divide-black">
   {#each tours as tour, index}
     <div
+      id="tour-main"
       class="flex h-[calc(25vh)] lg:h-[calc(35vh)] group transition-colors duration-500 ease-in-out"
       style="--hover-bg-color: {tour.hoverBackgroundColor};"
     >
@@ -14,7 +39,10 @@
         class="flex items-center w-full text-black group-hover:text-white group-active:text-white group-hover:bg-[var(--hover-bg-color)] group-active:bg-[var(--hover-bg-color)]"
       >
         {#if index % 2 === 1}
-          <div class="h-full w-1/2 lg:w-3/5 relative">
+          <div 
+            class="h-full w-1/2 lg:w-3/5 relative"
+            id="tour-block"
+          >
             <img
               src={tour.image}
               alt="{tour.title}"
@@ -122,3 +150,7 @@
     </div>
   {/each}
 </div>
+
+<style>
+  
+</style>

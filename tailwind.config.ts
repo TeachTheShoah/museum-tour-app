@@ -15,19 +15,6 @@ export default {
         gothic: ["News Gothic"],
       },
       colors: {
-        // flowbite-svelte
-        primary: {
-          50: '#F5F9FC',
-          100: '#EBF3FA',
-          200: '#D6E7F5',
-          300: '#B7D3ED',
-          400: '#8BB8E2',
-          500: '#5C9DCE',
-          600: '#4A86B4',
-          700: '#3A6D96',
-          800: '#2B5578',
-          900: '#1E3C57',
-        },
         bg: {
           dark: '#EAF0F5', // Soft grayish-blue background
           light: '#F5F5F5', // Muted white background

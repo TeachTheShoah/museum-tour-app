@@ -21,6 +21,7 @@
 		"@sveltejs/vite-plugin-svelte": "^4.0.0",
 		"@types/crypto-js": "^4.2.2",
 		"@types/eslint": "^9.6.0",
+		"@types/google.maps": "^3.58.1",
 		"@types/node": "^22.9.1",
 		"autoprefixer": "^10.4.20",
 		"eslint": "^9.7.0",

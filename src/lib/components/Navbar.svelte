@@ -1,10 +1,16 @@
 <script lang="ts">
+  import { locateUser } from "$lib/utils/geolocation.svelte";
+  import LoadingDots from "$lib/components/LoadingDots.svelte";
+
   let showExhibitSubmenu = $state(false);
   let showLocateMeSubmenu = $state(false);
   let showMobileMenu = $state(false);
   let showExhibitMobileMenu = $state(false);
   let showLocateMeMobileMenu = $state(false);
   let locale = $state("EN");
+  let loadingLocation = $state(false);
+  let loc: UserLocation | null = $state(null);
+  let err: string | null = $state(null);
   let { innerWidth } = $props();
 
   function toggleLocale() {
@@ -14,6 +20,21 @@
       locale = "EN"
     }
   }
+
+  async function handleLocateMe() {
+    if (loadingLocation) return;
+    loadingLocation = true;
+    err = null; 
+    try {
+      loc = await locateUser();
+    } catch (error) {
+      console.error('Error locating user:', error);
+      err = `${error instanceof Error ? error.message : 'Unknown error'}`;
+    } finally {
+      loadingLocation = false;
+    }
+  }
+
 </script>
 
 
@@ -87,9 +108,9 @@
       <span class="font-bold text-black">
         {#if locale === "EN"}
           {#if innerWidth > 380}
-            <span class="whitespace-nowrap text-3xl lg:text-5xl">THE VIENNA HOLOCAUST</span>
+            <span class="whitespace-nowrap text-3xl lg:text-5xl">THE VIENNA HOLOCAUST&nbsp;</span>
           {:else}
-            <span class="whitespace-nowrap text-2xl ml-2">THE VIENNA HOLOCAUST</span>
+            <span class="whitespace-nowrap text-2xl ml-2">THE VIENNA HOLOCAUST&nbsp;</span>
           {/if}
           {#if innerWidth <= 540}
             <div class="flex items-center">
@@ -120,7 +141,7 @@
           </div>
           {:else}
             <span class="whitespace-nowrap text-3xl lg:text-5xl">
-              &nbsp;REMEMBRANCE TOURS
+              REMEMBRANCE TOURS
             </span>
           {/if}
         {/if}
@@ -148,9 +169,12 @@
             Exhibits
           </button>
           <button
-            onclick={() => {
+            onclick={async () => {
               showLocateMeMobileMenu = !showLocateMeMobileMenu;
               showExhibitMobileMenu = false;
+                if (showLocateMeMobileMenu) {
+                  handleLocateMe();
+                }
               } 
             }
             class="py-3 text-black text-3xl font-bold active:underline"
@@ -301,10 +325,18 @@
               Where Am I?
             </p>
             <div class="mt-4 text-xl">
-            </div>
-            <p class="mt-0.5 lg:text-xl">
-              You are closest to the Leopoldstadt tour :&#41;
-            </p>
+            </div>              
+            {#if loc}
+              <p class="mt-0.5 lg:text-xl">
+                You are currently in: {loc.city}
+              </p>
+            {:else if err}
+              <p class="mt-0.5 lg:text-xl">
+                Error locating your location. Please enable location in your browser, refresh the page, and try again.
+              </p>
+            {:else}
+              <p class="mt-0.5 lg:text-xl">Loading your location<LoadingDots/></p>
+            {/if}
           </div>
         </div>
       {/if}
@@ -324,9 +356,12 @@
           Exhibits
         </button>
         <button
-          onclick={() => {
-            showLocateMeSubmenu = !showLocateMeSubmenu;
+          onclick={async () => {
+            showLocateMeSubmenu = !showLocateMeSubmenu ;
             showExhibitSubmenu = false;
+              if (showLocateMeSubmenu ) {
+                handleLocateMe();
+              }
             } 
           }
           class="py-2 text-black text-2xl font-bold hover:underline"
@@ -371,9 +406,13 @@
     <p class="font-bold text-2xl text-gray-500">
       Plan Your Visit 
     </p>
-    <p class="mt-4 text-2xl">
-      Our Holocaust museum tours can exclusivly be found in Vienna, Austria. <br class="mt-0.5"/>
-      There are currently two tours available: Leopoldstadt and Inner Stadt. <br class="mt-0.5"/>
+    <p class="mt-2 text-2xl">
+      Our Holocaust museum tours can exclusivly be found in Vienna, Austria.
+    </p>
+    <p class="mt-0.5 text-2xl">
+      There are currently two tours available: Leopoldstadt and Inner Stadt.
+    </p>
+    <p class="mt-4 text-base">
       Please enjoy our thoughtfully curated tours, designed to provide an authentic and educational experience.
     </p>
   </div>
@@ -398,9 +437,18 @@
     <p class="font-bold text-2xl text-gray-500">
       Where Am I?
     </p>
-    <p class="mt-4 text-2xl">
-      You are closest to the Leopoldstadt tour :&#41;
-    </p>
+    {#if loc}
+      <p class="mt-2 text-2xl">Looks like you're currently in {loc.city}, {loc.state}.</p> 
+      <p class="mt-0.5 text-2xl">
+        {#if loc.state != "Austria"} Come visit us in Austria! {:else} Your nearest tour is in {loc.tour}, {loc.distance}km away.{/if}
+      </p>
+    {:else if err}
+      <p class="mt-0.5 text-2xl">
+        Error locating your location. Please enable location in your browser, refresh the page, and try again.
+      </p>
+    {:else}
+      <p class="mt-0.5 text-2xl">Loading your location<LoadingDots/></p> 
+    {/if}
   </div>
   <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_noninteractive_element_interactions -->
   <div 
@@ -432,3 +480,7 @@
   >
   </div>
 {/if}
+
+<style>
+  
+</style>
