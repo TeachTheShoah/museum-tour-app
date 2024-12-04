@@ -1,5 +1,4 @@
 import { error, json } from '@sveltejs/kit';
-import { VITE_MAPS_API_KEY } from '$env/static/private';
 import type { RequestEvent } from '@sveltejs/kit';
 
 export async function GET({ url }: RequestEvent) {
@@ -36,7 +35,8 @@ async function getCityandStateFromCoordinates(
 	latitude: number,
 	longitude: number
 ): Promise<{ city: string; state: string }> {
-	const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${VITE_MAPS_API_KEY}`;
+	const apiKey = import.meta.env.VITE_MAPS_API_KEY;
+	const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${apiKey}`;
 
 	const response = await fetch(url);
 
