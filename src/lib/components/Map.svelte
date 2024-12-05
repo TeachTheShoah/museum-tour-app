@@ -424,7 +424,7 @@
 <div
 	bind:this={mapElement}
 	id="map"
-	class="w-100 h-[calc(100vh-60px)] lg:h-[calc(100vh-80px)]"
+	class="w-100 h-[calc(100vh-52px)] lg:h-[calc(100vh-72px)]"
 ></div>
 {#if loadingLocation}
 	<div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20">

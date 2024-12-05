@@ -16,7 +16,7 @@ Part of a collaborative effort betweeen SWIGGI and Teach the Shoah."
 
 <svelte:window bind:innerWidth/>
 
-<div class="relative flex flex-col" >
+<div class="relative flex flex-col h-[100vh]" >
   <!-- Header -->
   <Navbar {innerWidth}/>
   <div class="flex-grow">
@@ -25,7 +25,6 @@ Part of a collaborative effort betweeen SWIGGI and Teach the Shoah."
     />
     <About image={HeroImage}/>
   </div>
-  <Footer />
 </div>
 
 

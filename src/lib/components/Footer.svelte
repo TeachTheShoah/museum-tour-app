@@ -28,7 +28,7 @@
 </script>
 
 <footer
-  class="w-full mt-auto bg-white border-t border-gray-200 z-50 pb-1 lg:pb-0"
+  class="absolute bottom-0 w-full mt-auto bg-white border-t border-gray-200 z-20 lg:pb-0"
 >
   <div class="grid h-full max-w-lg mx-auto grid-cols-3 lg:gap-x-64">
     {#each links as link}
