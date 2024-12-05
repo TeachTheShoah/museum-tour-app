@@ -35,6 +35,8 @@
 
 	let deviceOrientationListenerAdded = false;
 
+	let selectedLocation: Tour['locations'][number] | null = $state(null);
+
 	let { id } = $props();
 
 	async function loadGoogleMapsScript(): Promise<void> {
@@ -135,6 +137,7 @@
 				center: tour.center_coords,
 				mapId: 'a3e0c95b63c4277f',
 				disableDefaultUI: true,
+				clickableIcons: false,
 				gestureHandling: 'greedy'
 			});
 			map.addListener('zoom_changed', () => {
@@ -145,12 +148,15 @@
 			});
 			const locations = tour.locations;
 			locations.forEach((location) => {
-				new Marker!({
+				const marker = new Marker!({
 					map: map,
 					position: location.coords,
 					title: location.location_name,
 					gmpClickable: true,
 					collisionBehavior: google.maps.CollisionBehavior.REQUIRED_AND_HIDES_OPTIONAL
+				});
+				marker.addListener('gmp-click', () => {
+					selectedLocation = location;
 				});
 			});
 		} else {
@@ -468,6 +474,75 @@
 		/></svg
 	>
 </button>
+
+{#if selectedLocation}
+	<!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_noninteractive_element_interactions -->
+	<div
+		class="fixed inset-0 bg-black/50 flex items-center justify-center z-30 p-4"
+		role="button"
+		tabindex="0"
+		aria-label="Open Modal"
+		onclick={(e) => e.target === e.currentTarget && (selectedLocation = null)}
+	>
+		<div class="bg-white rounded-lg w-full max-w-md shadow-lg relative">
+			<!-- Header -->
+			<div class="p-4 border-b">
+				<h2 class="text-xl font-medium text-gray-900">{selectedLocation.location_name}</h2>
+				<button
+					onclick={() => (selectedLocation = null)}
+					class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+					aria-label="Close modal"
+				>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="24"
+						height="24"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+					>
+						<line x1="18" y1="6" x2="6" y2="18"></line>
+						<line x1="6" y1="6" x2="18" y2="18"></line>
+					</svg>
+				</button>
+			</div>
+
+			<!-- Content -->
+			<div class="p-4 space-y-4">
+				{#if selectedLocation.occupant}
+					<div>
+						<h3 class="font-medium text-gray-900">Occupant</h3>
+						<p class="text-gray-700">{selectedLocation.occupant}</p>
+					</div>
+				{/if}
+
+				{#if selectedLocation.brief_description}
+					<div>
+						<h3 class="font-medium text-gray-900">Description</h3>
+						<p class="text-gray-700">{selectedLocation.brief_description}</p>
+					</div>
+				{/if}
+
+				{#if selectedLocation.biography}
+					<div>
+						<h3 class="font-medium text-gray-900">Biography</h3>
+						<p class="text-gray-700">{selectedLocation.biography}</p>
+					</div>
+				{/if}
+
+				{#if selectedLocation.address}
+					<div>
+						<h3 class="font-medium text-gray-900">Address</h3>
+						<p class="text-gray-700">{selectedLocation.address}</p>
+					</div>
+				{/if}
+			</div>
+		</div>
+	</div>
+{/if}
 
 <style>
 	button:hover {
