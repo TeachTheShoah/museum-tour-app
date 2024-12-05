@@ -39,6 +39,15 @@
 
 	let isHorizontal = $state(false);
 
+	let { id } = $props();
+
+	const images: Record<string, { default: string }> = import.meta.glob('$lib/assets/**/*.jpg', {
+		eager: true
+	});
+	const audios: Record<string, { default: string }> = import.meta.glob('$lib/assets/**/*.mp3', {
+		eager: true
+	});
+
 	function handleImageLoad(event: Event) {
 		const target = event.target as HTMLImageElement | null;
 		if (target) {
@@ -46,8 +55,6 @@
 			isHorizontal = naturalWidth > naturalHeight; // Check orientation
 		}
 	}
-
-	let { id } = $props();
 
 	async function loadGoogleMapsScript(): Promise<void> {
 		if (typeof google !== 'undefined' && google.maps) {
@@ -532,7 +539,7 @@
 					{#if isHorizontal}
 						<div class="w-full">
 							<img
-								src={selectedLocation.cover_jpg}
+								src={images[selectedLocation.cover_jpg]?.default}
 								alt={selectedLocation.location_name}
 								class="w-full h-48 object-cover rounded-lg"
 								onload={handleImageLoad}
@@ -548,7 +555,7 @@
 						<div class="flex justify-start">
 							<div class="w-1/3">
 								<img
-									src={selectedLocation.cover_jpg}
+									src={images[selectedLocation.cover_jpg]?.default}
 									alt={selectedLocation.location_name}
 									class="w-full h-auto object-cover rounded-lg"
 									onload={handleImageLoad}
@@ -583,7 +590,7 @@
 					<div>
 						<h3 class="italic text-gray-900">Audio Guide</h3>
 						<audio controls class="w-full mt-2">
-							<source src={selectedLocation.audio_url} type="audio/mpeg" />
+							<source src={audios[selectedLocation.audio_url]?.default} type="audio/mpeg" />
 							Your browser does not support the audio element.
 						</audio>
 					</div>
