@@ -1,4 +1,4 @@
-import { haversineDistance } from './haversine';
+import { haversineDistance } from './haversine.svelte';
 
 export async function locateUser(): Promise<UserLocation> {
 	if (!navigator.geolocation) {
@@ -21,7 +21,7 @@ export async function locateUser(): Promise<UserLocation> {
 		const cityState = await serverResponse.json();
 
 		// Fetch tours
-		const fetchResponse = await fetch('/tour.json');
+		const fetchResponse = await fetch('/data/tours.json');
 		if (!fetchResponse.ok) {
 			throw new Error(`Failed to fetch`);
 		}

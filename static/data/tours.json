@@ -1,7 +1,6 @@
 [
 	{
-		"id": 2,
-		"district": "Leopoldstadt",
+		"district": "leopoldstadt",
 		"stops": 8,
 		"walking_distance": 2,
 		"walking_time": 30,
@@ -11,7 +10,7 @@
 		},
 		"locations": [
 			{
-				"location_id": 2.1,
+				"location_id": 1,
 				"location_name": "Former Home of Renata Krochmal",
 				"address": "Große Schiffgasse 2",
 				"occupant": "Renata Krochmal",
@@ -23,7 +22,7 @@
 				}
 			},
 			{
-				"locationId": 2.2,
+				"locationId": 2,
 				"location_name": "Schiffschul",
 				"address": "Große Schiffgasse 8",
 				"occupant": "Schiffschul",
@@ -35,7 +34,7 @@
 				}
 			},
 			{
-				"locationId": 2.3,
+				"locationId": 3,
 				"location_name": "Julius Ofner Denkmal",
 				"address": "Große Schiffgasse 2",
 				"occupant": "Julius Ofner",
@@ -47,7 +46,7 @@
 				}
 			},
 			{
-				"locationId": 2.4,
+				"locationId": 4,
 				"location_name": "Former Home of H. Finkelbloch",
 				"address": "Taborstraße 23",
 				"occupant": "Helmuth Finkelbloch",
@@ -59,7 +58,7 @@
 				}
 			},
 			{
-				"locationId": 2.5,
+				"locationId": 5,
 				"location_name": "Former Home of Georg Agatstein",
 				"address": "Glockengasse 4",
 				"occupant": "Georg Agatstein",
@@ -71,7 +70,7 @@
 				}
 			},
 			{
-				"locationId": 2.6,
+				"locationId": 6,
 				"location_name": "Former Home of Manfred Papo",
 				"address": "Rotensterngasse 7",
 				"occupant": "Manfred Papo",
@@ -83,7 +82,7 @@
 				}
 			},
 			{
-				"locationId": 2.7,
+				"locationId": 7,
 				"location_name": "Former Home of Albert Berger",
 				"address": "Rotensterngasse 37",
 				"occupant": "Albert Rubin Berger",
@@ -95,7 +94,7 @@
 				}
 			},
 			{
-				"locationId": 2.8,
+				"locationId": 8,
 				"location_name": "Former Home of Dora Schwam",
 				"address": "Pazmanitengasse 4",
 				"occupant": "Dora Schwam",
