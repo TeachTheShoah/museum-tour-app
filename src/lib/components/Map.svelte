@@ -211,32 +211,33 @@
 		}
 	}
 
-	function animateRotation(targetRotation: number) {
-		const diff = (targetRotation - currentRotation + 360) % 360;
+  function animateRotation(targetRotation: number) {
+    let diff = (targetRotation - currentRotation + 360) % 360;
 
-		// Find the shortest path (clockwise or counterclockwise)
-		if (diff > 180) {
-			currentRotation -= (360 - diff) * 0.1; // Adjust step size for smoothness
-		} else {
-			currentRotation += diff * 0.1;
-		}
+    // Determine the shortest direction (clockwise or counterclockwise)
+    if (diff > 180) {
+        diff -= 360; // Go counterclockwise
+    }
 
-		// Normalize rotation
-		currentRotation = (currentRotation + 360) % 360;
+    // Smoothly update the rotation
+    currentRotation += diff * 0.1; // Adjust step size for smoothness
 
-		if (markerElement) {
-			markerElement.style.transform = `rotate(${currentRotation}deg)`;
-		}
+    // Normalize rotation to the range [0, 360)
+    currentRotation = (currentRotation + 360) % 360;
 
-		// Continue animation if target is not reached
-		if (Math.abs(targetRotation - currentRotation) > 0.1) {
-			requestAnimationFrame(() => animateRotation(targetRotation));
-		} else {
-			// Finish animation and reset flag
-			isRotating = false;
-		}
-	}
-  
+    if (markerElement) {
+        markerElement.style.transform = `rotate(${currentRotation}deg)`;
+    }
+
+    // Continue animation if target is not reached
+    if (Math.abs(diff) > 0.1) {
+        requestAnimationFrame(() => animateRotation(targetRotation));
+    } else {
+        // Finish animation and reset flag
+        isRotating = false;
+    }
+}
+
 	async function handleButtonClick() {
 		// Ensure Marker class is loaded
 		if (!Marker) {
