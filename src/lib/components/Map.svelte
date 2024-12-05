@@ -19,7 +19,7 @@
 	let loadingLocation = $state(false);
 
 	const rotationBuffer: number[] = [];
-	const bufferSize = 10;
+	const bufferSize = 5;
 
 	let animationFrameId: number | null = null;
 	let isAnimating = false;
@@ -261,7 +261,7 @@
             <svg 
               viewBox="-3 -3 30 30" 
               xmlns="http://www.w3.org/2000/svg" 
-              style="width: 24px; height: 24px; transform-origin: center center; transform: translate(0px, 0px)  scale(1.35)">
+              style="width: 24px; height: 24px; transform-origin: center center; transform: scale(1.35)">
               <circle cx="12" cy="12" r="12.5" fill="white" />
               <path
                 fill-rule="evenodd" 
@@ -271,8 +271,6 @@
             </svg>
             `;
 					markerElement.style.transform = 'rotate(0deg)';
-          markerElement.style.position = 'absolute';
-          markerElement.style.transform = 'translate(-50%, -50%)';
 					user = new Marker!({
 						map: map,
 						position: placeholderCoords,
