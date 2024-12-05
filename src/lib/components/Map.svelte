@@ -177,7 +177,7 @@
 				radius -= 0.1;
 				if (radius < 12.5) increasing = true;
 			}
-			const userSvg = document.querySelector('svg circle');
+			const userSvg = markerElement.querySelector('svg circle');
 			if (userSvg) {
 				userSvg.setAttribute('r', `${radius}`);
 			}
@@ -421,6 +421,26 @@
 {/if}
 
 <button
+	aria-label="Locate"
+	class="absolute bottom-[125px] lg:bottom-[145px] right-4 bg-[#4285F4] w-[50px] h-[50px] rounded-full flex items-center justify-center z-14"
+	onclick={handleNavButtonClick}
+>
+	<svg
+		xmlns="http://www.w3.org/2000/svg"
+		style="transform: translate(-1.5px, 1.5px);"
+		width="24"
+		height="24"
+		viewBox="0 0 24 24"
+		fill="#FFFFFF"
+		stroke="#FFFFFF"
+		stroke-width="2"
+		stroke-linecap="round"
+		stroke-linejoin="round"
+		class="lucide lucide-navigation"><polygon points="3 11 22 2 13 21 11 13 3 11" /></svg
+	>
+</button>
+
+<button
 	aria-label="Center"
 	class="absolute bottom-[70px] lg:bottom-[90px] right-4 bg-[#FFFFFF] w-[50px] h-[50px] rounded-full flex items-center justify-center z-14"
 	onclick={handleCenterButtonClick}
@@ -446,26 +466,6 @@
 			cy="12"
 			r="3"
 		/></svg
-	>
-</button>
-
-<button
-	aria-label="Locate"
-	class="absolute bottom-[125px] lg:bottom-[145px] right-4 bg-[#4285F4] w-[50px] h-[50px] rounded-full flex items-center justify-center z-14"
-	onclick={handleNavButtonClick}
->
-	<svg
-		xmlns="http://www.w3.org/2000/svg"
-		style="transform: translate(-1.5px, 1.5px);"
-		width="24"
-		height="24"
-		viewBox="0 0 24 24"
-		fill="#FFFFFF"
-		stroke="#FFFFFF"
-		stroke-width="2"
-		stroke-linecap="round"
-		stroke-linejoin="round"
-		class="lucide lucide-navigation"><polygon points="3 11 22 2 13 21 11 13 3 11" /></svg
 	>
 </button>
 
