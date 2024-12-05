@@ -271,7 +271,7 @@
             </svg>
             `;
 					markerElement.style.transform = 'rotate(0deg)';
-          markerContent.style.transform = 'translate(0, 50%)'
+          markerElement.style.transform = 'translate(0, 50%)'
 					user = new Marker!({
 						map: map,
 						position: placeholderCoords,
