@@ -261,7 +261,7 @@
             <svg 
               viewBox="-3 -3 30 30" 
               xmlns="http://www.w3.org/2000/svg" 
-              style="width: 24px; height: 24px; transform-origin: center; transform: )">
+              style="width: 24px; height: 24px; transform-origin: center center; transform: translate(0px, 0px)  scale(1.35)">
               <circle cx="12" cy="12" r="12.5" fill="white" />
               <path
                 fill-rule="evenodd" 
@@ -270,11 +270,14 @@
                 fill="#4285F4"/>
             </svg>
             `;
-					markerElement.style.transform = 'rotate(0deg) scale(1.35)';
+					markerElement.style.transform = 'rotate(0deg)';
+          markerElement.style.position = 'absolute';
+          markerElement.style.transform = 'translate(-50%, -50%)';
 					user = new Marker!({
 						map: map,
 						position: placeholderCoords,
-						content: markerElement
+						content: markerElement,
+            zIndex: 99,
 					});
 					animateUserCircle();
 					tracking = new google.maps.Circle({
