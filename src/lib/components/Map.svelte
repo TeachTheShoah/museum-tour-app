@@ -19,10 +19,14 @@
 	let loadingLocation = $state(false);
 
 	const rotationBuffer: number[] = [];
-	const bufferSize = 5;
+	const bufferSize = 10;
 
 	let animationFrameId: number | null = null;
 	let isAnimating = false;
+
+	let currentRotation = 0;
+	let rotationFrameId: number | null = null;
+	let isRotating = false;
 
 	let deviceOrientationListenerAdded = false;
 
@@ -76,17 +80,19 @@
 			setTimeout(() => reject(new Error('Timeout waiting for libraries')), 5000);
 		});
 
-		const waitForMarker = new Promise<typeof google.maps.marker.AdvancedMarkerElement>((resolve) => {
-			if (google.maps.marker?.AdvancedMarkerElement) {
-				resolve(google.maps.marker.AdvancedMarkerElement);
-			}
-			const interval = setInterval(() => {
+		const waitForMarker = new Promise<typeof google.maps.marker.AdvancedMarkerElement>(
+			(resolve) => {
 				if (google.maps.marker?.AdvancedMarkerElement) {
-					clearInterval(interval);
 					resolve(google.maps.marker.AdvancedMarkerElement);
 				}
-			}, 100);
-		});
+				const interval = setInterval(() => {
+					if (google.maps.marker?.AdvancedMarkerElement) {
+						clearInterval(interval);
+						resolve(google.maps.marker.AdvancedMarkerElement);
+					}
+				}, 100);
+			}
+		);
 
 		const waitForMap = new Promise<typeof google.maps.Map>((resolve) => {
 			if (google.maps.Map) {
@@ -124,9 +130,9 @@
 				center: tour.center_coords,
 				mapId: 'a3e0c95b63c4277f',
 				disableDefaultUI: true,
-        gestureHandling: 'greedy'
+				gestureHandling: 'greedy'
 			});
-      map.addListener('zoom_changed', () => {
+			map.addListener('zoom_changed', () => {
 				const zoom = map?.getZoom();
 				if (zoom && zoom > 20) {
 					map?.setZoom(20);
@@ -177,44 +183,60 @@
 		updateRadius();
 	}
 
-  function handleDeviceOrientation(event: DeviceOrientationEventWithWebkit) {
-    if (event.alpha != null) {
-        // Convert alpha to compass heading (clockwise from north)
-        let compassHeading = 360 - event.alpha;
-        
-        // Apply device-specific corrections if needed
-        if (event.webkitCompassHeading) {
-            // iOS devices provide webkitCompassHeading
-            compassHeading = event.webkitCompassHeading;
-        }
+	function handleDeviceOrientation(event: DeviceOrientationEventWithWebkit) {
+		if (event.alpha != null) {
+			let compassHeading = 360 - event.alpha;
 
-        rotationBuffer.push(compassHeading);
+			if (event.webkitCompassHeading) {
+				compassHeading = event.webkitCompassHeading;
+			}
 
-        // Keep buffer size limited
-        if (rotationBuffer.length > bufferSize) {
-            rotationBuffer.shift();
-        }
+			rotationBuffer.push(compassHeading);
 
-        // Calculate the average rotation using circular mean
-        const radians = rotationBuffer.map(deg => deg * (Math.PI / 180));
-        const sumSin = radians.reduce((sum, rad) => sum + Math.sin(rad), 0);
-        const sumCos = radians.reduce((sum, rad) => sum + Math.cos(rad), 0);
-        const smoothedRotation = Math.atan2(sumSin, sumCos) * (180 / Math.PI);
+			if (rotationBuffer.length > bufferSize) {
+				rotationBuffer.shift();
+			}
 
-        // Ensure the rotation is positive
-        const normalizedRotation = smoothedRotation < 0 ? smoothedRotation + 360 : smoothedRotation;
-        
-        updateUserDirection(normalizedRotation);
-    }
-}
+			const radians = rotationBuffer.map((deg) => deg * (Math.PI / 180));
+			const sumSin = radians.reduce((sum, rad) => sum + Math.sin(rad), 0);
+			const sumCos = radians.reduce((sum, rad) => sum + Math.cos(rad), 0);
+			const smoothedRotation = Math.atan2(sumSin, sumCos) * (180 / Math.PI);
+			const normalizedRotation = smoothedRotation < 0 ? smoothedRotation + 360 : smoothedRotation;
 
-function updateUserDirection(rotation: number) {
-    if (markerElement) {
-        // Apply rotation with a CSS transition for smoother updates
-        markerElement.style.transition = 'transform 0.2s ease-out';
-        markerElement.style.transform = `rotate(${rotation}deg) scale(1.35)`;
-    }
-}
+			if (!isRotating) {
+				isRotating = true; // Block new triggers
+				console.log(`Rotation: ${normalizedRotation}`);
+				animateRotation(normalizedRotation);
+			}
+		}
+	}
+
+	function animateRotation(targetRotation: number) {
+		const diff = (targetRotation - currentRotation + 360) % 360;
+
+		// Find the shortest path (clockwise or counterclockwise)
+		if (diff > 180) {
+			currentRotation -= (360 - diff) * 0.1; // Adjust step size for smoothness
+		} else {
+			currentRotation += diff * 0.1;
+		}
+
+		// Normalize rotation
+		currentRotation = (currentRotation + 360) % 360;
+
+		if (markerElement) {
+			markerElement.style.transform = `rotate(${currentRotation}deg)`;
+		}
+
+		// Continue animation if target is not reached
+		if (Math.abs(targetRotation - currentRotation) > 0.1) {
+			requestAnimationFrame(() => animateRotation(targetRotation));
+		} else {
+			// Finish animation and reset flag
+			isRotating = false;
+		}
+	}
+  
 	async function handleButtonClick() {
 		// Ensure Marker class is loaded
 		if (!Marker) {
@@ -325,6 +347,10 @@ function updateUserDirection(rotation: number) {
 			animationFrameId = null;
 		}
 		isAnimating = false;
+		if (rotationFrameId !== null) {
+			rotationFrameId = null;
+		}
+		isRotating = false;
 	});
 </script>
 
