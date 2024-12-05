@@ -41,6 +41,7 @@ declare global {
 			occupant: string;
 			brief_description: string;
 			biography: string;
+			audio_url: string;
 			coords: {
 				lat: number;
 				lng: number;

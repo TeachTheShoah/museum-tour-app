@@ -236,8 +236,14 @@
 		// Normalize rotation to the range [0, 360)
 		currentRotation = (currentRotation + 360) % 360;
 
-		if (markerElement) {
-			markerElement.style.transform = `'translate(-50%, -50%) scale(1.35) rotate(${currentRotation}deg)`;
+		if (markerElement && map) {
+			// Get the map's current heading (rotation)
+			const mapHeading = map.getHeading() || 0;
+
+			// Adjust the icon's rotation relative to the map's rotation
+			const adjustedRotation = currentRotation - mapHeading;
+
+			markerElement.style.transform = `translate(-50%, -50%) scale(1.35) rotate(${adjustedRotation}deg)`;
 		}
 
 		// Continue animation if target is not reached
@@ -487,7 +493,7 @@
 		<div class="bg-white rounded-lg w-full max-w-md shadow-lg relative">
 			<!-- Header -->
 			<div class="p-4 border-b">
-				<h2 class="text-xl font-medium text-gray-900">{selectedLocation.location_name}</h2>
+				<h2 class="text-xl font-bold text-gray-900">{selectedLocation.location_name}</h2>
 				<button
 					onclick={() => (selectedLocation = null)}
 					class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
@@ -512,31 +518,35 @@
 
 			<!-- Content -->
 			<div class="p-4 space-y-4">
+        <div class="flex justify-between">
+          {#if selectedLocation.address}
+					<div class="w-1/2">
+						<h3 class="italic text-gray-900">Address</h3>
+						<p class="text-gray-700">{selectedLocation.address}</p>
+					</div>
+				{/if}
 				{#if selectedLocation.occupant}
-					<div>
-						<h3 class="font-medium text-gray-900">Occupant</h3>
+					<div class="w-1/2">
+						<h3 class="italic text-gray-900">Occupant</h3>
 						<p class="text-gray-700">{selectedLocation.occupant}</p>
 					</div>
 				{/if}
+        </div>
+
+        {#if selectedLocation.audio_url}
+          <div>
+            <h3 class="italic text-gray-900">Audio Guide</h3>
+            <audio controls class="w-full mt-2">
+              <source src={selectedLocation.audio_url} type="audio/mpeg">
+              Your browser does not support the audio element.
+            </audio>
+          </div>
+        {/if}
 
 				{#if selectedLocation.brief_description}
 					<div>
-						<h3 class="font-medium text-gray-900">Description</h3>
+						<h3 class="italic text-gray-900">Description</h3>
 						<p class="text-gray-700">{selectedLocation.brief_description}</p>
-					</div>
-				{/if}
-
-				{#if selectedLocation.biography}
-					<div>
-						<h3 class="font-medium text-gray-900">Biography</h3>
-						<p class="text-gray-700">{selectedLocation.biography}</p>
-					</div>
-				{/if}
-
-				{#if selectedLocation.address}
-					<div>
-						<h3 class="font-medium text-gray-900">Address</h3>
-						<p class="text-gray-700">{selectedLocation.address}</p>
 					</div>
 				{/if}
 			</div>
