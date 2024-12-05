@@ -48,7 +48,7 @@
 		// Initialize the map
 		if (mapElement) {
 			map = new Map(mapElement, {
-				zoom: 16,
+				zoom: 15,
 				minZoom: 13,
 				maxZoom: 20,
 				center: tour.center_coords,
@@ -100,7 +100,7 @@
 							position: placeholderCoords,
 							content: markerElement
 						});
-            animateUserCircle();
+						animateUserCircle();
 						tracking = new google.maps.Circle({
 							map,
 							center: placeholderCoords,
@@ -119,7 +119,30 @@
 			} else {
 				console.warn('Geolocation is not supported by this browser.');
 			}
-			window.addEventListener('deviceorientation', handleDeviceOrientation);
+      // hacky way to get device orientation on ios + chrome with ts
+			if (
+				typeof DeviceOrientationEvent !== 'undefined' &&
+				typeof (DeviceOrientationEvent as any).requestPermission === 'function'
+			) {
+				// iOS Safari requires explicit permission
+				(DeviceOrientationEvent as any)
+					.requestPermission()
+					.then((response: string) => {
+						if (response === 'granted') {
+							console.log('DeviceOrientationEvent permission granted.');
+							window.addEventListener('deviceorientation', handleDeviceOrientation);
+						} else {
+							console.error('DeviceOrientationEvent permission denied.');
+						}
+					})
+					.catch((error: any) => {
+						console.error('Error requesting DeviceOrientationEvent permission:', error);
+					});
+			} else {
+				// Non-iOS browsers
+				console.log('DeviceOrientationEvent does not require permission.');
+				window.addEventListener('deviceorientation', handleDeviceOrientation);
+			}
 		} else {
 			console.error('Map element is not bound.');
 		}
