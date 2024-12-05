@@ -12,8 +12,8 @@ declare global {
 	};
 	
 	type Coordinates = {
-		latitude: number;
-		longitude: number;
+		lat: number;
+		lng: number;
 	};
 
 	interface UserLocation {

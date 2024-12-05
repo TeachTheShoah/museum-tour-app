@@ -6,11 +6,14 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { getAdvancedMarkerElement } from '../../routes/api/maps/advancedMarkerElement';
 	import { getMapElement } from '../../routes/api/maps/mapElement';
+	import LoadingDots from './LoadingDots.svelte';
 
 	let mapElement: HTMLElement | null = null;
 	let map: google.maps.Map | null = null;
 	let Marker: AdvancedMarkerElementConstructor | null = null;
 	let Map: MapElementConstructor | null = null;
+
+	let center: Coordinates;
 
 	let markerElement: HTMLElement;
 
@@ -261,6 +264,7 @@
 			});
 		}
 		user.position = coords;
+		tracking.setCenter(coords);
 		console.log('User location updated:', coords);
 	}
 
@@ -270,6 +274,12 @@
 		}
 	}
 
+	function handleCenterButtonClick() {
+		if (map && center) {
+			map.panTo(center);
+			map.setZoom(15);
+		}
+	}
 	async function handleNavButtonClick() {
 		// Ensure Marker class is loaded
 		if (!Marker) {
@@ -281,8 +291,7 @@
 				// Get initial position first
 				const position = await new Promise<GeolocationPosition>((resolve, reject) => {
 					navigator.geolocation.getCurrentPosition(resolve, reject, {
-						enableHighAccuracy: true,
-						timeout: 5000
+						timeout: 10000
 					});
 				});
 				// Update user location with initial position
@@ -375,6 +384,7 @@
 			const selectedTour = tours.find((tour) => tour.district === id);
 			if (selectedTour) {
 				await initMap(selectedTour);
+				center = selectedTour.center_coords;
 			}
 		} catch (err) {
 			console.error('Error mounting:', err);
@@ -405,13 +415,43 @@
 	class="w-100 h-[calc(100vh-60px)] lg:h-[calc(100vh-80px)]"
 ></div>
 {#if loadingLocation}
-	<div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-999">
-		<div class="text-white text-lg font-bold">Loading...</div>
+	<div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20">
+		<div class="text-white text-lg font-bold">Loading<LoadingDots /></div>
 	</div>
 {/if}
+
+<button
+	aria-label="Center"
+	class="absolute bottom-[70px] lg:bottom-[90px] right-4 bg-[#FFFFFF] w-[50px] h-[50px] rounded-full flex items-center justify-center z-14"
+	onclick={handleCenterButtonClick}
+>
+	<svg
+		xmlns="http://www.w3.org/2000/svg"
+		width="24"
+		height="24"
+		viewBox="0 0 24 24"
+		fill="none"
+		stroke="currentColor"
+		stroke-width="2"
+		stroke-linecap="round"
+		stroke-linejoin="round"
+		class="lucide lucide-locate-fixed"
+		><line x1="2" x2="5" y1="12" y2="12" /><line x1="19" x2="22" y1="12" y2="12" /><line
+			x1="12"
+			x2="12"
+			y1="2"
+			y2="5"
+		/><line x1="12" x2="12" y1="19" y2="22" /><circle cx="12" cy="12" r="7" /><circle
+			cx="12"
+			cy="12"
+			r="3"
+		/></svg
+	>
+</button>
+
 <button
 	aria-label="Locate"
-	class="absolute bottom-[70px] lg:bottom-[90px] right-4 bg-[#4285F4] w-[50px] h-[50px] rounded-full flex items-center justify-center z-999"
+	class="absolute bottom-[125px] lg:bottom-[145px] right-4 bg-[#4285F4] w-[50px] h-[50px] rounded-full flex items-center justify-center z-14"
 	onclick={handleNavButtonClick}
 >
 	<svg
@@ -431,7 +471,6 @@
 
 <style>
 	button:hover {
-		outline: none;
-		box-shadow: 0 0 0 2px rgba(10, 80, 200, 0.4);
+		box-shadow: 0 0 0 2px rgba(100, 135, 215, 0.4);
 	}
 </style>
