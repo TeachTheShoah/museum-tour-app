@@ -261,7 +261,7 @@
             <svg 
               viewBox="-3 -3 30 30" 
               xmlns="http://www.w3.org/2000/svg" 
-              style="width: 24px; height: 24px; transform-origin: center center; transform: translate(0, 100%) scale(1.35)">
+              style="width: 24px; height: 24px; transform-origin: center center; transform: translate(0, 74.074%) scale(1.35)">
               <circle cx="12" cy="12" r="12.5" fill="white" />
               <path
                 fill-rule="evenodd" 
