@@ -1,31 +1,39 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
-	import { getAdvancedMarkerElement } from '$lib/utils/advancedMarker';
+	import { getAdvancedMarkerElement } from '../../routes/api/maps/advancedMarkerElement';
+	import { getMapElement } from '../../routes/api/maps/mapElement';
 
-	let googleMapsScriptLoadingPromise: Promise<void> | null = null;
 	let mapElement: HTMLElement | null = null;
-	let map: google.maps.Map;
+	let map: google.maps.Map | null = null;
+	let Marker: AdvancedMarkerElementConstructor | null = null;
+	let Map: MapElementConstructor | null = null;
+
 	let markerElement: HTMLElement;
 	let user: google.maps.marker.AdvancedMarkerElement;
 	let tracking: google.maps.Circle;
+
 	let loadingLocation = $state(false);
-	let Marker: AdvancedMarkerElementConstructor;
+
+	const rotationBuffer: number[] = [];
+	const bufferSize = 5;
+
 	let animationFrameId: number | null = null;
 	let isAnimating = false;
+
 	let deviceOrientationListenerAdded = false;
+
 	let { id } = $props();
 
 	async function loadGoogleMapsScript(): Promise<void> {
-		if (typeof window.google !== 'undefined' && window.google.maps) {
-			// Google Maps script already loaded
+		if (typeof google !== 'undefined' && google.maps) {
+			console.log('Google Maps already loaded.');
 			return;
 		}
 
-		if (googleMapsScriptLoadingPromise) {
-			// Script is already loading
-			return googleMapsScriptLoadingPromise;
+		if (document.querySelector('script[src*="maps.googleapis.com"]')) {
+			console.log('Google Maps script already loaded.');
+			return;
 		}
-
 		const res = await fetch('/api/maps');
 		const data = await res.json();
 
@@ -33,19 +41,17 @@
 			throw new Error(data.error);
 		}
 
-		googleMapsScriptLoadingPromise = new Promise<void>((resolve, reject) => {
-			const script = document.createElement('script');
-			script.src = data.scriptUrl;
-			script.async = true;
-			script.defer = true;
+		const script = document.createElement('script');
+		script.src = data.scriptUrl;
+		script.async = true;
+		script.defer = true;
 
-			script.onload = () => resolve(); // Resolves the promise successfully
+		// Convert the script load event to a promise
+		await new Promise<void>((resolve, reject) => {
+			script.onload = () => resolve();
 			script.onerror = () => reject(new Error('Failed to load Google Maps script'));
-
 			document.head.appendChild(script);
 		});
-
-		return googleMapsScriptLoadingPromise;
 	}
 
 	async function fetchTours(): Promise<Tour[]> {
@@ -59,13 +65,51 @@
 
 	async function initMap(tour: Tour): Promise<void> {
 		if (map) {
-			// Map is already initialized
 			return;
 		}
-		//@ts-ignore
-		const { Map } = (await google.maps.importLibrary('maps')) as google.maps.MapsLibrary;
+
+		const timeout = new Promise<never>((_, reject) => {
+			setTimeout(() => reject(new Error('Timeout waiting for libraries')), 5000);
+		});
+
+		const waitForMarker = new Promise<typeof google.maps.marker.AdvancedMarkerElement>((resolve) => {
+			if (google.maps.marker?.AdvancedMarkerElement) {
+				resolve(google.maps.marker.AdvancedMarkerElement);
+			}
+			const interval = setInterval(() => {
+				if (google.maps.marker?.AdvancedMarkerElement) {
+					clearInterval(interval);
+					resolve(google.maps.marker.AdvancedMarkerElement);
+				}
+			}, 100);
+		});
+
+		const waitForMap = new Promise<typeof google.maps.Map>((resolve) => {
+			if (google.maps.Map) {
+				resolve(google.maps.Map);
+			}
+			const interval = setInterval(() => {
+				if (google.maps.Map) {
+					clearInterval(interval);
+					resolve(google.maps.Map);
+				}
+			}, 100);
+		});
+
+		try {
+			await Promise.race([Promise.all([waitForMarker, waitForMap]), timeout]);
+		} catch (error: unknown) {
+			if (error instanceof Error) {
+				throw new Error('Google Maps libraries not available: ' + error.message);
+			}
+			throw new Error('Google Maps libraries not available: Unknown error');
+		}
+
 		if (!Marker) {
 			Marker = await getAdvancedMarkerElement();
+		}
+		if (!Map) {
+			Map = await getMapElement();
 		}
 		// Initialize the map
 		if (mapElement) {
@@ -77,10 +121,9 @@
 				mapId: 'a3e0c95b63c4277f',
 				disableDefaultUI: true
 			});
-
 			const locations = tour.locations;
 			locations.forEach((location) => {
-				new Marker({
+				new Marker!({
 					map: map,
 					position: location.coords,
 					title: location.location_name,
@@ -98,42 +141,46 @@
 			console.warn('User circle is not initialized.');
 			return;
 		}
-    if (isAnimating) {
-        return;
-    }
-    isAnimating = true;
+		if (isAnimating) {
+			return;
+		}
+		isAnimating = true;
 		let increasing = true;
 		let radius = 12.5;
-
 		function updateRadius() {
-			// Update the radius
 			if (increasing) {
 				radius += 0.1;
-				if (radius >= 14) increasing = false; // Reverse direction
+				if (radius >= 14) increasing = false;
 			} else {
 				radius -= 0.1;
-				if (radius <= 12.5) increasing = true; // Reverse direction
+				if (radius < 12.5) increasing = true;
 			}
-			// Update the circle's radius in the SVG
-			const userSvg = document.querySelector('svg circle'); // Select the circle in your SVG
+			const userSvg = document.querySelector('svg circle');
 			if (userSvg) {
 				userSvg.setAttribute('r', `${radius}`);
 			}
-			// Schedule the next frame
 			setTimeout(() => {
 				animationFrameId = requestAnimationFrame(updateRadius);
-			}, 100); // Adjust timing here for the desired pulsing effect
+			}, 100);
 		}
 		updateRadius();
 	}
 
 	function handleDeviceOrientation(event: DeviceOrientationEvent) {
-		const alpha = event.alpha; // Degrees relative to true north (0° to 360°)
-		if (alpha != null) {
-			updateUserDirection(alpha);
+		if (event.alpha != null) {
+			rotationBuffer.push(event.alpha);
+
+			// Keep buffer size limited
+			if (rotationBuffer.length > bufferSize) {
+				rotationBuffer.shift();
+			}
+
+			// Calculate the average rotation
+			const smoothedRotation =
+				rotationBuffer.reduce((sum, val) => sum + val, 0) / rotationBuffer.length;
+			updateUserDirection(smoothedRotation);
 		}
 	}
-
 	function updateUserDirection(rotation: number) {
 		if (markerElement) {
 			markerElement.style.transform = `rotate(${rotation}deg)`;
@@ -163,7 +210,7 @@
             <svg 
               viewBox="-3 -3 30 30" 
               xmlns="http://www.w3.org/2000/svg" 
-              style="width: 24px; height: 24px; transform-origin: center; transform: scale(1.35)">
+              style="width: 24px; height: 24px; transform-origin: center; transform: )">
               <circle cx="12" cy="12" r="12.5" fill="white" />
               <path
                 fill-rule="evenodd" 
@@ -172,9 +219,8 @@
                 fill="#4285F4"/>
             </svg>
             `;
-					markerElement.style.transform = 'translate(0%, 50%) rotate(0deg)';
-					markerElement.style.transition = 'transform 0.1s ease';
-					user = new Marker({
+					markerElement.style.transform = 'translate(0%, 50%) rotate(0deg) scale(1.35)';
+					user = new Marker!({
 						map: map,
 						position: placeholderCoords,
 						content: markerElement
@@ -234,10 +280,10 @@
 			const tours = await fetchTours();
 			const selectedTour = tours.find((tour) => tour.district === id);
 			if (selectedTour) {
-				initMap(selectedTour).catch((error) => console.error('Error initializing map:', error));
+				await initMap(selectedTour);
 			}
 		} catch (err) {
-			console.error('Error initializing map:', err);
+			console.error('Error mounting:', err);
 		}
 	});
 
@@ -246,15 +292,19 @@
 			window.removeEventListener('deviceorientation', handleDeviceOrientation);
 			deviceOrientationListenerAdded = false;
 		}
-    if (animationFrameId !== null) {
-        cancelAnimationFrame(animationFrameId);
-        animationFrameId = null;
-    }
-    isAnimating = false;
+		if (animationFrameId !== null) {
+			cancelAnimationFrame(animationFrameId);
+			animationFrameId = null;
+		}
+		isAnimating = false;
 	});
 </script>
 
-<div bind:this={mapElement} id="map" class="w-100 h-[calc(100vh-80px)]"></div>
+<div
+	bind:this={mapElement}
+	id="map"
+	class="w-100 h-[calc(100vh-60px)] lg:h-[calc(100vh-80px)]"
+></div>
 {#if loadingLocation}
 	<div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-999">
 		<div class="text-white text-lg font-bold">Loading...</div>
@@ -262,7 +312,7 @@
 {/if}
 <button
 	aria-label="Locate"
-	class="absolute bottom-[90px] right-4 bg-[#4285F4] w-[50px] h-[50px] rounded-full flex items-center justify-center z-999"
+	class="absolute bottom-[70px] lg:bottom-[90px] right-4 bg-[#4285F4] w-[50px] h-[50px] rounded-full flex items-center justify-center z-999"
 	onclick={handleButtonClick}
 >
 	<svg

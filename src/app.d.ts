@@ -4,6 +4,7 @@ declare global {
 	namespace App {
 	}
 	type AdvancedMarkerElementConstructor = typeof google.maps.marker.AdvancedMarkerElement;
+	type MapElementConstructor = typeof google.maps.Map;
 	type AddressComponent = {
 		long_name: string;
 		short_name: string;
