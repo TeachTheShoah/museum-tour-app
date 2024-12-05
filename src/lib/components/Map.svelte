@@ -226,7 +226,7 @@
 		currentRotation = (currentRotation + 360) % 360;
 
 		if (markerElement) {
-			markerElement.style.transform = `scale(1.35) rotate(${currentRotation}deg)`;
+			markerElement.style.transform = `'translate(-50%, -50%) scale(1.35) rotate(${currentRotation}deg)`;
 		}
 
 		// Continue animation if target is not reached
@@ -261,7 +261,7 @@
             <svg 
               viewBox="-3 -3 30 30" 
               xmlns="http://www.w3.org/2000/svg" 
-              style="width: 24px; height: 24px; transform-origin: center center; transform: scale(1.35)">
+              style="width: 24px; height: 24px; transform-origin: center center;)">
               <circle cx="12" cy="12" r="12.5" fill="white" />
               <path
                 fill-rule="evenodd" 
@@ -271,7 +271,7 @@
             </svg>
             `;
 					markerElement.style.position = 'absolute';
-					markerElement.style.transform = 'scale(1.35) rotate(0deg)';
+          markerElement.style.transform = 'translate(-50%, -50%) scale(1.35) rotate(0deg)';
 					markerElement.style.transformOrigin = 'center center';
           
 					user = new Marker!({
