@@ -211,32 +211,32 @@
 		}
 	}
 
-  function animateRotation(targetRotation: number) {
-    let diff = (targetRotation - currentRotation + 360) % 360;
+	function animateRotation(targetRotation: number) {
+		let diff = (targetRotation - currentRotation + 360) % 360;
 
-    // Determine the shortest direction (clockwise or counterclockwise)
-    if (diff > 180) {
-        diff -= 360; // Go counterclockwise
-    }
+		// Determine the shortest direction (clockwise or counterclockwise)
+		if (diff > 180) {
+			diff -= 360; // Go counterclockwise
+		}
 
-    // Smoothly update the rotation
-    currentRotation += diff * 0.1; // Adjust step size for smoothness
+		// Smoothly update the rotation
+		currentRotation += diff * 0.1; // Adjust step size for smoothness
 
-    // Normalize rotation to the range [0, 360)
-    currentRotation = (currentRotation + 360) % 360;
+		// Normalize rotation to the range [0, 360)
+		currentRotation = (currentRotation + 360) % 360;
 
-    if (markerElement) {
-        markerElement.style.transform = `rotate(${currentRotation}deg)`;
-    }
+		if (markerElement) {
+			markerElement.style.transform = `translate(0, 74.074%) scale(1.35) rotate(${currentRotation}deg)`;
+		}
 
-    // Continue animation if target is not reached
-    if (Math.abs(diff) > 0.1) {
-        requestAnimationFrame(() => animateRotation(targetRotation));
-    } else {
-        // Finish animation and reset flag
-        isRotating = false;
-    }
-}
+		// Continue animation if target is not reached
+		if (Math.abs(diff) > 0.1) {
+			requestAnimationFrame(() => animateRotation(targetRotation));
+		} else {
+			// Finish animation and reset flag
+			isRotating = false;
+		}
+	}
 
 	async function handleButtonClick() {
 		// Ensure Marker class is loaded
@@ -261,7 +261,7 @@
             <svg 
               viewBox="-3 -3 30 30" 
               xmlns="http://www.w3.org/2000/svg" 
-              style="width: 24px; height: 24px; transform-origin: center center; transform: translate(0, 74.074%) scale(1.35)">
+              style="width: 24px; height: 24px; transform-origin: center center; transform: scale(1.35)">
               <circle cx="12" cy="12" r="12.5" fill="white" />
               <path
                 fill-rule="evenodd" 
@@ -270,12 +270,15 @@
                 fill="#4285F4"/>
             </svg>
             `;
-					markerElement.style.transform = 'rotate(0deg)';
+					markerElement.style.position = 'absolute';
+					markerElement.style.transform = 'translate(0, 74.074%) scale(1.35) rotate(0deg)';
+					markerElement.style.transformOrigin = 'center center';
+          
 					user = new Marker!({
 						map: map,
 						position: placeholderCoords,
 						content: markerElement,
-            zIndex: 99,
+						zIndex: 99
 					});
 					animateUserCircle();
 					tracking = new google.maps.Circle({
