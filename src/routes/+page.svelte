@@ -16,7 +16,7 @@ Part of a collaborative effort betweeen SWIGGI and Teach the Shoah."
 
 <svelte:window bind:innerWidth/>
 
-<div class="relative flex flex-col h-[100vh]" >
+<div class="relative flex flex-col" >
   <!-- Header -->
   <Navbar {innerWidth}/>
   <div class="flex-grow">

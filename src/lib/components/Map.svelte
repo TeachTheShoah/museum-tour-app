@@ -37,6 +37,16 @@
 
 	let selectedLocation: Tour['locations'][number] | null = $state(null);
 
+	let isHorizontal = $state(false);
+
+	function handleImageLoad(event: Event) {
+		const target = event.target as HTMLImageElement | null;
+		if (target) {
+			const { naturalWidth, naturalHeight } = target;
+			isHorizontal = naturalWidth > naturalHeight; // Check orientation
+		}
+	}
+
 	let { id } = $props();
 
 	async function loadGoogleMapsScript(): Promise<void> {
@@ -424,7 +434,7 @@
 <div
 	bind:this={mapElement}
 	id="map"
-  class="fixed inset-0 w-full h-[calc(100dvh-52px)] lg:h-[calc(100dvh-80px)]"
+	class="fixed inset-0 w-full h-[calc(100dvh-52px)] lg:h-[calc(100dvh-80px)]"
 ></div>
 {#if loadingLocation}
 	<div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20">
@@ -518,35 +528,64 @@
 
 			<!-- Content -->
 			<div class="p-4 space-y-4">
-        <div class="flex justify-between">
-          {#if selectedLocation.address}
-					<div class="w-1/2">
-						<h3 class="italic text-gray-900">Address</h3>
-						<p class="text-gray-700">{selectedLocation.address}</p>
-					</div>
+				{#if selectedLocation.cover_jpg}
+					{#if isHorizontal}
+						<div class="w-full">
+							<img
+								src={selectedLocation.cover_jpg}
+								alt={selectedLocation.location_name}
+								class="w-full h-48 object-cover rounded-lg"
+								onload={handleImageLoad}
+							/>
+						</div>
+						{#if selectedLocation.brief_description}
+							<div>
+								<h3 class="italic text-gray-900">Description</h3>
+								<p class="text-gray-700">{selectedLocation.brief_description}</p>
+							</div>
+						{/if}
+					{:else}
+						<div class="flex justify-start">
+							<div class="w-1/3">
+								<img
+									src={selectedLocation.cover_jpg}
+									alt={selectedLocation.location_name}
+									class="w-full h-auto object-cover rounded-lg"
+									onload={handleImageLoad}
+								/>
+							</div>
+							{#if selectedLocation.brief_description}
+								<div class="w-2/3 px-6 flex flex-col justify-center">
+									<h3 class="italic text-gray-900">Description</h3>
+									<p class="text-gray-700">{selectedLocation.brief_description}</p>
+								</div>
+							{/if}
+						</div>
+					{/if}
 				{/if}
-				{#if selectedLocation.occupant}
-					<div class="w-1/2">
-						<h3 class="italic text-gray-900">Occupant</h3>
-						<p class="text-gray-700">{selectedLocation.occupant}</p>
-					</div>
-				{/if}
-        </div>
 
-        {#if selectedLocation.audio_url}
-          <div>
-            <h3 class="italic text-gray-900">Audio Guide</h3>
-            <audio controls class="w-full mt-2">
-              <source src={selectedLocation.audio_url} type="audio/mpeg">
-              Your browser does not support the audio element.
-            </audio>
-          </div>
-        {/if}
+				<div class="flex justify-between">
+					{#if selectedLocation.address}
+						<div class="w-1/2">
+							<h3 class="italic text-gray-900">Address</h3>
+							<p class="text-gray-700">{selectedLocation.address}</p>
+						</div>
+					{/if}
+					{#if selectedLocation.occupant}
+						<div class="w-1/2">
+							<h3 class="italic text-gray-900">Occupant</h3>
+							<p class="text-gray-700">{selectedLocation.occupant}</p>
+						</div>
+					{/if}
+				</div>
 
-				{#if selectedLocation.brief_description}
+				{#if selectedLocation.audio_url}
 					<div>
-						<h3 class="italic text-gray-900">Description</h3>
-						<p class="text-gray-700">{selectedLocation.brief_description}</p>
+						<h3 class="italic text-gray-900">Audio Guide</h3>
+						<audio controls class="w-full mt-2">
+							<source src={selectedLocation.audio_url} type="audio/mpeg" />
+							Your browser does not support the audio element.
+						</audio>
 					</div>
 				{/if}
 			</div>

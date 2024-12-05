@@ -42,6 +42,9 @@ declare global {
 			brief_description: string;
 			biography: string;
 			audio_url: string;
+			video_url: string,
+			cover_jpg: string,
+			bio_jpg: string,
 			coords: {
 				lat: number;
 				lng: number;
