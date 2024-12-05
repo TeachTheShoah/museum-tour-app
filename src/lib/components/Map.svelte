@@ -13,6 +13,25 @@
 	let Map: MapElementConstructor | null = null;
 
 	let markerElement: HTMLElement;
+	markerElement = document.createElement('div');
+	markerElement.innerHTML = `
+    <svg 
+      viewBox="-3 -3 30 30" 
+      xmlns="http://www.w3.org/2000/svg" 
+      style="width: 24px; height: 24px; transform-origin: center center;)">
+      <circle cx="12" cy="12" r="12.5" fill="white" />
+      <path
+        fill-rule="evenodd" 
+        clip-rule="evenodd" 
+        d="M2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12ZM15.7071 13.7071C15.3166 14.0976 14.6834 14.0976 14.2929 13.7071L12 11.4142L9.70711 13.7071C9.31658 14.0976 8.68342 14.0976 8.29289 13.7071C7.90237 13.3166 7.90237 12.6834 8.29289 12.2929L11.0915 9.49425C11.5933 8.99252 12.4067 8.99252 12.9085 9.49425L15.7071 12.2929C16.0976 12.6834 16.0976 13.3166 15.7071 13.7071Z" 
+        fill="#4285F4"/>
+    </svg>
+    `;
+	markerElement.style.position = 'absolute';
+	markerElement.style.transform = 'translate(-50%, -50%) scale(1.35) rotate(0deg)';
+	markerElement.style.transformOrigin = 'center center';
+
+	let watchId: number;
 	let user: google.maps.marker.AdvancedMarkerElement;
 	let tracking: google.maps.Circle;
 
@@ -238,67 +257,82 @@
 		}
 	}
 
-	async function handleButtonClick() {
+	function updateUserLocation(coords: { lat: number; lng: number }) {
+		if (!user) {
+			user = new Marker!({
+				map: map,
+				position: coords,
+				content: markerElement,
+				zIndex: 99
+			});
+			animateUserCircle();
+			tracking = new google.maps.Circle({
+				map,
+				center: coords,
+				radius: 10,
+				strokeColor: '#92C6E0',
+				strokeOpacity: 0.75,
+				strokeWeight: 1,
+				fillColor: '#ADD8E6',
+				fillOpacity: 0.5
+			});
+		}
+		user.position = coords;
+    console.log('User location updated:', coords);
+	}
+
+	function stopLocationUpdates() {
+		if (watchId) {
+			navigator.geolocation.clearWatch(watchId);
+		}
+	}
+
+	async function handleNavButtonClick() {
 		// Ensure Marker class is loaded
 		if (!Marker) {
 			Marker = await getAdvancedMarkerElement();
 		}
-		// Add the user's location to the map
-		if (map && navigator.geolocation && !user) {
-			loadingLocation = true;
-			navigator.geolocation.getCurrentPosition(
-				(position) => {
-					// const userCoords = {
-					// 	lat: position.coords.latitude,
-					// 	lng: position.coords.longitude
-					// };
-					const placeholderCoords = {
-						lat: 48.21774803393539,
-						lng: 16.380806841905153
-					};
-					markerElement = document.createElement('div');
-					markerElement.innerHTML = `
-            <svg 
-              viewBox="-3 -3 30 30" 
-              xmlns="http://www.w3.org/2000/svg" 
-              style="width: 24px; height: 24px; transform-origin: center center;)">
-              <circle cx="12" cy="12" r="12.5" fill="white" />
-              <path
-                fill-rule="evenodd" 
-                clip-rule="evenodd" 
-                d="M2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12ZM15.7071 13.7071C15.3166 14.0976 14.6834 14.0976 14.2929 13.7071L12 11.4142L9.70711 13.7071C9.31658 14.0976 8.68342 14.0976 8.29289 13.7071C7.90237 13.3166 7.90237 12.6834 8.29289 12.2929L11.0915 9.49425C11.5933 8.99252 12.4067 8.99252 12.9085 9.49425L15.7071 12.2929C16.0976 12.6834 16.0976 13.3166 15.7071 13.7071Z" 
-                fill="#4285F4"/>
-            </svg>
-            `;
-					markerElement.style.position = 'absolute';
-          markerElement.style.transform = 'translate(-50%, -50%) scale(1.35) rotate(0deg)';
-					markerElement.style.transformOrigin = 'center center';
-          
-					user = new Marker!({
-						map: map,
-						position: placeholderCoords,
-						content: markerElement,
-						zIndex: 99
-					});
-					animateUserCircle();
-					tracking = new google.maps.Circle({
-						map,
-						center: placeholderCoords,
-						radius: 10,
-						strokeColor: '#92C6E0',
-						strokeOpacity: 0.75,
-						strokeWeight: 1,
-						fillColor: '#ADD8E6',
-						fillOpacity: 0.5
-					});
-				},
-				(error) => {
-					console.error('Error getting user location:', error);
-				}
-			);
-			loadingLocation = false;
-		} else {
-		}
+    if (map && navigator.geolocation && !user && !watchId) {
+        loadingLocation = true;
+        try {
+            // Get initial position first
+            const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+                navigator.geolocation.getCurrentPosition(resolve, reject, {
+                    enableHighAccuracy: true,
+                    timeout: 5000
+                });
+            });
+            // Update user location with initial position
+            const initCoords = {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude
+            };
+            updateUserLocation(initCoords);
+            
+            // Then start watching for updates
+            watchId = navigator.geolocation.watchPosition(
+                (position) => {
+                  const coords = {
+                      lat: position.coords.latitude,
+                      lng: position.coords.longitude
+                  };
+                    updateUserLocation(coords);
+                },
+                (error) => {
+                    console.error('Error fetching location:', error);
+                },
+                {
+                    enableHighAccuracy: true,
+                    maximumAge: 2000,
+                    timeout: 5000
+                }
+            );
+        } catch (error) {
+            console.error('Error getting initial position:', error);
+        } finally {
+            loadingLocation = false;
+        }
+    }
 		// hacky way to get device orientation on ios + chrome with ts
 		if (!deviceOrientationListenerAdded) {
 			if (
@@ -327,6 +361,11 @@
 				deviceOrientationListenerAdded = true;
 			}
 		}
+    if (user && map) {
+        const position = user.position as google.maps.LatLng;
+        map.panTo(position);
+        return;
+    }
 	}
 
 	onMount(async () => {
@@ -356,6 +395,7 @@
 			rotationFrameId = null;
 		}
 		isRotating = false;
+    stopLocationUpdates();
 	});
 </script>
 
@@ -372,7 +412,7 @@
 <button
 	aria-label="Locate"
 	class="absolute bottom-[70px] lg:bottom-[90px] right-4 bg-[#4285F4] w-[50px] h-[50px] rounded-full flex items-center justify-center z-999"
-	onclick={handleButtonClick}
+	onclick={handleNavButtonClick}
 >
 	<svg
 		xmlns="http://www.w3.org/2000/svg"
