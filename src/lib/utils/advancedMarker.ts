@@ -1,5 +1,4 @@
-type AdvancedMarkerElementConstructor = typeof google.maps.marker.AdvancedMarkerElement;
-let AdvancedMarkerElementSingleton: AdvancedMarkerElementConstructor | null = null;
+let AdvancedMarkerElementSingleton: AdvancedMarkerElementConstructor;
 
 export async function getAdvancedMarkerElement(): Promise<typeof google.maps.marker.AdvancedMarkerElement> {
   

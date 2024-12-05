@@ -1,16 +1,31 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 	import { getAdvancedMarkerElement } from '$lib/utils/advancedMarker';
 
+	let googleMapsScriptLoadingPromise: Promise<void> | null = null;
 	let mapElement: HTMLElement | null = null;
 	let map: google.maps.Map;
 	let markerElement: HTMLElement;
 	let user: google.maps.marker.AdvancedMarkerElement;
 	let tracking: google.maps.Circle;
-	type AdvancedMarkerElementConstructor = typeof google.maps.marker.AdvancedMarkerElement;
+	let loadingLocation = $state(false);
+	let Marker: AdvancedMarkerElementConstructor;
+	let animationFrameId: number | null = null;
+	let isAnimating = false;
+	let deviceOrientationListenerAdded = false;
 	let { id } = $props();
 
 	async function loadGoogleMapsScript(): Promise<void> {
+		if (typeof window.google !== 'undefined' && window.google.maps) {
+			// Google Maps script already loaded
+			return;
+		}
+
+		if (googleMapsScriptLoadingPromise) {
+			// Script is already loading
+			return googleMapsScriptLoadingPromise;
+		}
+
 		const res = await fetch('/api/maps');
 		const data = await res.json();
 
@@ -18,7 +33,7 @@
 			throw new Error(data.error);
 		}
 
-		return new Promise<void>((resolve, reject) => {
+		googleMapsScriptLoadingPromise = new Promise<void>((resolve, reject) => {
 			const script = document.createElement('script');
 			script.src = data.scriptUrl;
 			script.async = true;
@@ -29,6 +44,8 @@
 
 			document.head.appendChild(script);
 		});
+
+		return googleMapsScriptLoadingPromise;
 	}
 
 	async function fetchTours(): Promise<Tour[]> {
@@ -40,11 +57,16 @@
 		return tours;
 	}
 
-	async function initMap(Marker: AdvancedMarkerElementConstructor, tour: Tour): Promise<void> {
+	async function initMap(tour: Tour): Promise<void> {
+		if (map) {
+			// Map is already initialized
+			return;
+		}
 		//@ts-ignore
 		const { Map } = (await google.maps.importLibrary('maps')) as google.maps.MapsLibrary;
-		//@ts-ignore
-
+		if (!Marker) {
+			Marker = await getAdvancedMarkerElement();
+		}
 		// Initialize the map
 		if (mapElement) {
 			map = new Map(mapElement, {
@@ -66,83 +88,6 @@
 					collisionBehavior: google.maps.CollisionBehavior.REQUIRED_AND_HIDES_OPTIONAL
 				});
 			});
-			// Add the user's location to the map
-			if (navigator.geolocation) {
-				navigator.geolocation.getCurrentPosition(
-					(position) => {
-						// const userCoords = {
-						// 	lat: position.coords.latitude,
-						// 	lng: position.coords.longitude
-						// };
-						const placeholderCoords = {
-							lat: 48.21774803393539,
-							lng: 16.380806841905153
-						};
-						markerElement = document.createElement('div');
-						markerElement.innerHTML = `
-            <svg 
-              viewBox="-3 -3 30 30" 
-              xmlns="http://www.w3.org/2000/svg" 
-              style="width: 24px; height: 24px; transform-origin: center; transform: scale(1.35)">
-              <circle cx="12" cy="12" r="13" fill="white" />
-              <path
-                fill-rule="evenodd" 
-                clip-rule="evenodd" 
-                d="M2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12ZM15.7071 13.7071C15.3166 14.0976 14.6834 14.0976 14.2929 13.7071L12 11.4142L9.70711 13.7071C9.31658 14.0976 8.68342 14.0976 8.29289 13.7071C7.90237 13.3166 7.90237 12.6834 8.29289 12.2929L11.0915 9.49425C11.5933 8.99252 12.4067 8.99252 12.9085 9.49425L15.7071 12.2929C16.0976 12.6834 16.0976 13.3166 15.7071 13.7071Z" 
-                fill="#4285F4"/>
-            </svg>
-            `;
-						markerElement.style.transform = 'translate(0%, 50%) rotate(0deg)';
-						markerElement.style.transition = 'transform 0.1s ease';
-
-						user = new Marker({
-							map: map,
-							position: placeholderCoords,
-							content: markerElement
-						});
-						animateUserCircle();
-						tracking = new google.maps.Circle({
-							map,
-							center: placeholderCoords,
-							radius: 10,
-							strokeColor: '#92C6E0',
-							strokeOpacity: 0.75,
-							strokeWeight: 1,
-							fillColor: '#ADD8E6',
-							fillOpacity: 0.5
-						});
-					},
-					(error) => {
-						console.error('Error getting user location:', error);
-					}
-				);
-			} else {
-				console.warn('Geolocation is not supported by this browser.');
-			}
-      // hacky way to get device orientation on ios + chrome with ts
-			if (
-				typeof DeviceOrientationEvent !== 'undefined' &&
-				typeof (DeviceOrientationEvent as any).requestPermission === 'function'
-			) {
-				// iOS Safari requires explicit permission
-				(DeviceOrientationEvent as any)
-					.requestPermission()
-					.then((response: string) => {
-						if (response === 'granted') {
-							console.log('DeviceOrientationEvent permission granted.');
-							window.addEventListener('deviceorientation', handleDeviceOrientation);
-						} else {
-							console.error('DeviceOrientationEvent permission denied.');
-						}
-					})
-					.catch((error: any) => {
-						console.error('Error requesting DeviceOrientationEvent permission:', error);
-					});
-			} else {
-				// Non-iOS browsers
-				console.log('DeviceOrientationEvent does not require permission.');
-				window.addEventListener('deviceorientation', handleDeviceOrientation);
-			}
 		} else {
 			console.error('Map element is not bound.');
 		}
@@ -153,15 +98,18 @@
 			console.warn('User circle is not initialized.');
 			return;
 		}
-
+    if (isAnimating) {
+        return;
+    }
+    isAnimating = true;
 		let increasing = true;
-		let radius = 13;
+		let radius = 12.5;
 
 		function updateRadius() {
 			// Update the radius
 			if (increasing) {
 				radius += 0.1;
-				if (radius >= 13.5) increasing = false; // Reverse direction
+				if (radius >= 14) increasing = false; // Reverse direction
 			} else {
 				radius -= 0.1;
 				if (radius <= 12.5) increasing = true; // Reverse direction
@@ -173,10 +121,9 @@
 			}
 			// Schedule the next frame
 			setTimeout(() => {
-				requestAnimationFrame(updateRadius);
-			}, 80); // Adjust timing here for the desired pulsing effect
+				animationFrameId = requestAnimationFrame(updateRadius);
+			}, 100); // Adjust timing here for the desired pulsing effect
 		}
-
 		updateRadius();
 	}
 
@@ -193,21 +140,149 @@
 		}
 	}
 
+	async function handleButtonClick() {
+		// Ensure Marker class is loaded
+		if (!Marker) {
+			Marker = await getAdvancedMarkerElement();
+		}
+		// Add the user's location to the map
+		if (map && navigator.geolocation && !user) {
+			loadingLocation = true;
+			navigator.geolocation.getCurrentPosition(
+				(position) => {
+					// const userCoords = {
+					// 	lat: position.coords.latitude,
+					// 	lng: position.coords.longitude
+					// };
+					const placeholderCoords = {
+						lat: 48.21774803393539,
+						lng: 16.380806841905153
+					};
+					markerElement = document.createElement('div');
+					markerElement.innerHTML = `
+            <svg 
+              viewBox="-3 -3 30 30" 
+              xmlns="http://www.w3.org/2000/svg" 
+              style="width: 24px; height: 24px; transform-origin: center; transform: scale(1.35)">
+              <circle cx="12" cy="12" r="12.5" fill="white" />
+              <path
+                fill-rule="evenodd" 
+                clip-rule="evenodd" 
+                d="M2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12ZM15.7071 13.7071C15.3166 14.0976 14.6834 14.0976 14.2929 13.7071L12 11.4142L9.70711 13.7071C9.31658 14.0976 8.68342 14.0976 8.29289 13.7071C7.90237 13.3166 7.90237 12.6834 8.29289 12.2929L11.0915 9.49425C11.5933 8.99252 12.4067 8.99252 12.9085 9.49425L15.7071 12.2929C16.0976 12.6834 16.0976 13.3166 15.7071 13.7071Z" 
+                fill="#4285F4"/>
+            </svg>
+            `;
+					markerElement.style.transform = 'translate(0%, 50%) rotate(0deg)';
+					markerElement.style.transition = 'transform 0.1s ease';
+					user = new Marker({
+						map: map,
+						position: placeholderCoords,
+						content: markerElement
+					});
+					animateUserCircle();
+					tracking = new google.maps.Circle({
+						map,
+						center: placeholderCoords,
+						radius: 10,
+						strokeColor: '#92C6E0',
+						strokeOpacity: 0.75,
+						strokeWeight: 1,
+						fillColor: '#ADD8E6',
+						fillOpacity: 0.5
+					});
+				},
+				(error) => {
+					console.error('Error getting user location:', error);
+				}
+			);
+			loadingLocation = false;
+		} else {
+		}
+		// hacky way to get device orientation on ios + chrome with ts
+		if (!deviceOrientationListenerAdded) {
+			if (
+				typeof DeviceOrientationEvent !== 'undefined' &&
+				typeof (DeviceOrientationEvent as any).requestPermission === 'function'
+			) {
+				// iOS Safari requires explicit permission
+				(DeviceOrientationEvent as any)
+					.requestPermission()
+					.then((response: string) => {
+						if (response === 'granted') {
+							console.log('DeviceOrientationEvent permission granted.');
+							window.addEventListener('deviceorientation', handleDeviceOrientation);
+							deviceOrientationListenerAdded = true;
+						} else {
+							console.error('DeviceOrientationEvent permission denied.');
+						}
+					})
+					.catch((error: any) => {
+						console.error('Error requesting DeviceOrientationEvent permission:', error);
+					});
+			} else {
+				// Non-iOS browsers
+				console.log('DeviceOrientationEvent does not require permission.');
+				window.addEventListener('deviceorientation', handleDeviceOrientation);
+				deviceOrientationListenerAdded = true;
+			}
+		}
+	}
+
 	onMount(async () => {
 		try {
 			await loadGoogleMapsScript();
-			const Marker = await getAdvancedMarkerElement();
 			const tours = await fetchTours();
 			const selectedTour = tours.find((tour) => tour.district === id);
 			if (selectedTour) {
-				initMap(Marker, selectedTour).catch((error) =>
-					console.error('Error initializing map:', error)
-				);
+				initMap(selectedTour).catch((error) => console.error('Error initializing map:', error));
 			}
 		} catch (err) {
 			console.error('Error initializing map:', err);
 		}
 	});
+
+	onDestroy(() => {
+		if (deviceOrientationListenerAdded) {
+			window.removeEventListener('deviceorientation', handleDeviceOrientation);
+			deviceOrientationListenerAdded = false;
+		}
+    if (animationFrameId !== null) {
+        cancelAnimationFrame(animationFrameId);
+        animationFrameId = null;
+    }
+    isAnimating = false;
+	});
 </script>
 
-<div bind:this={mapElement} id="map" class="w-100 h-[calc(100vh-60px)]"></div>
+<div bind:this={mapElement} id="map" class="w-100 h-[calc(100vh-80px)]"></div>
+{#if loadingLocation}
+	<div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-999">
+		<div class="text-white text-lg font-bold">Loading...</div>
+	</div>
+{/if}
+<button
+	aria-label="Locate"
+	class="absolute bottom-[90px] right-4 bg-[#4285F4] w-[50px] h-[50px] rounded-full flex items-center justify-center z-999"
+	onclick={handleButtonClick}
+>
+	<svg
+		xmlns="http://www.w3.org/2000/svg"
+		style="transform: translate(-1.5px, 1.5px);"
+		width="24"
+		height="24"
+		viewBox="0 0 24 24"
+		fill="#FFFFFF"
+		stroke="#FFFFFF"
+		stroke-width="2"
+		stroke-linecap="round"
+		stroke-linejoin="round"
+		class="lucide lucide-navigation"><polygon points="3 11 22 2 13 21 11 13 3 11" /></svg
+	>
+</button>
+
+<style>
+	button:hover {
+		outline: none;
+		box-shadow: 0 0 0 2px rgba(10, 80, 200, 0.4);
+	}
+</style>
