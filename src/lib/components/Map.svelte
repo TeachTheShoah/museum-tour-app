@@ -1,4 +1,8 @@
 <script lang="ts">
+	interface DeviceOrientationEventWithWebkit extends DeviceOrientationEvent {
+		webkitCompassHeading?: number;
+	}
+
 	import { onMount, onDestroy } from 'svelte';
 	import { getAdvancedMarkerElement } from '../../routes/api/maps/advancedMarkerElement';
 	import { getMapElement } from '../../routes/api/maps/mapElement';
@@ -119,7 +123,14 @@
 				maxZoom: 20,
 				center: tour.center_coords,
 				mapId: 'a3e0c95b63c4277f',
-				disableDefaultUI: true
+				disableDefaultUI: true,
+        gestureHandling: 'greedy'
+			});
+      map.addListener('zoom_changed', () => {
+				const zoom = map?.getZoom();
+				if (zoom && zoom > 20) {
+					map?.setZoom(20);
+				}
 			});
 			const locations = tour.locations;
 			locations.forEach((location) => {
@@ -166,27 +177,44 @@
 		updateRadius();
 	}
 
-	function handleDeviceOrientation(event: DeviceOrientationEvent) {
-		if (event.alpha != null) {
-			rotationBuffer.push(event.alpha);
+  function handleDeviceOrientation(event: DeviceOrientationEventWithWebkit) {
+    if (event.alpha != null) {
+        // Convert alpha to compass heading (clockwise from north)
+        let compassHeading = 360 - event.alpha;
+        
+        // Apply device-specific corrections if needed
+        if (event.webkitCompassHeading) {
+            // iOS devices provide webkitCompassHeading
+            compassHeading = event.webkitCompassHeading;
+        }
 
-			// Keep buffer size limited
-			if (rotationBuffer.length > bufferSize) {
-				rotationBuffer.shift();
-			}
+        rotationBuffer.push(compassHeading);
 
-			// Calculate the average rotation
-			const smoothedRotation =
-				rotationBuffer.reduce((sum, val) => sum + val, 0) / rotationBuffer.length;
-			updateUserDirection(smoothedRotation);
-		}
-	}
-	function updateUserDirection(rotation: number) {
-		if (markerElement) {
-			markerElement.style.transform = `rotate(${rotation}deg)`;
-		}
-	}
+        // Keep buffer size limited
+        if (rotationBuffer.length > bufferSize) {
+            rotationBuffer.shift();
+        }
 
+        // Calculate the average rotation using circular mean
+        const radians = rotationBuffer.map(deg => deg * (Math.PI / 180));
+        const sumSin = radians.reduce((sum, rad) => sum + Math.sin(rad), 0);
+        const sumCos = radians.reduce((sum, rad) => sum + Math.cos(rad), 0);
+        const smoothedRotation = Math.atan2(sumSin, sumCos) * (180 / Math.PI);
+
+        // Ensure the rotation is positive
+        const normalizedRotation = smoothedRotation < 0 ? smoothedRotation + 360 : smoothedRotation;
+        
+        updateUserDirection(normalizedRotation);
+    }
+}
+
+function updateUserDirection(rotation: number) {
+    if (markerElement) {
+        // Apply rotation with a CSS transition for smoother updates
+        markerElement.style.transition = 'transform 0.2s ease-out';
+        markerElement.style.transform = `rotate(${rotation}deg) scale(1.35)`;
+    }
+}
 	async function handleButtonClick() {
 		// Ensure Marker class is loaded
 		if (!Marker) {
@@ -219,7 +247,7 @@
                 fill="#4285F4"/>
             </svg>
             `;
-					markerElement.style.transform = 'translate(0%, 50%) rotate(0deg) scale(1.35)';
+					markerElement.style.transform = 'rotate(0deg) scale(1.35)';
 					user = new Marker!({
 						map: map,
 						position: placeholderCoords,
