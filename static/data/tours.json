@@ -44,7 +44,7 @@
 			{
 				"locationId": 3,
 				"location_name": "Julius Ofner Denkmal",
-				"address": "Große Schiffgasse 2",
+				"address": "Taborstraße 23",
 				"occupant": "Julius Ofner",
 				"audio_url": "/src/lib/assets/zone-2/segment-3/audio.mp3",
 				"video_url": "/src/lib/assets/zone-2/segment-3/video.mp4",
@@ -60,7 +60,7 @@
 			{
 				"locationId": 4,
 				"location_name": "Former Home of H. Finkelbloch",
-				"address": "Taborstraße 23",
+				"address": "Glockengasse 4",
 				"occupant": "Helmuth Finkelbloch",
 				"audio_url": "/src/lib/assets/zone-2/segment-4/audio.mp3",
 				"video_url": "/src/lib/assets/zone-2/segment-4/video.mp4",
@@ -82,7 +82,7 @@
 				"video_url": "/src/lib/assets/zone-2/segment-5/video.mp4",
 				"cover_jpg": "/src/lib/assets/zone-2/segment-5/cover.jpg",
 				"bio_jpg": "/src/lib/assets/zone-2/segment-5/bio.jpg",
-				"brief_description": "Little is known about Georg Agatstein, who lived on the Rotensterngasse 7 together with his maternal grandfather Salomom Beer. Together they were deported from Vienna in 1942.",
+				"brief_description": "Little is known about Georg Agatstein, who lived at Rotensterngasse 7 with his maternal grandfather Salomom Beer. Together they were deported from Vienna in 1942.",
 				"biography": "Georg Karl and his parents were born in Vienna. His father, Josef Agatstein, handed in a request to migrate and so did his aunt Gisele Beer. Georg lived with his maternal grandmother Salomon Beer prior to their deportation on the 24th of Sep 1942.",
 				"coords": {
 					"lat": 48.21811349740669,

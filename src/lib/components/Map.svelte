@@ -36,6 +36,7 @@
 	let deviceOrientationListenerAdded = false;
 
 	let selectedLocation: Tour['locations'][number] | null = $state(null);
+	let visitedLocations: number[] = []; // Array
 
 	let isHorizontal = $state(false);
 
@@ -164,11 +165,48 @@
 				}
 			});
 			const locations = tour.locations;
-			locations.forEach((location) => {
+			const directionsService = new google.maps.DirectionsService();
+
+			for (let i = 0; i < locations.length - 1; i++) {
+				const request = {
+					origin: locations[i].coords,
+					destination: locations[i + 1].coords,
+					travelMode: google.maps.TravelMode.WALKING
+				};
+
+				directionsService.route(request, (result, status) => {
+					if (status === google.maps.DirectionsStatus.OK && result && result.routes.length > 0) {
+						const routePolyline = new google.maps.Polyline({
+							path: result.routes[0].overview_path,
+							geodesic: true,
+							strokeColor: '#FF0000',
+							strokeWeight: 4 // Set stroke width to 2
+						});
+						routePolyline.setMap(map);
+					} else {
+						console.error('Directions request failed due to ' + status);
+					}
+				});
+			}
+
+			locations.forEach((location, index) => {
+				const markerContent = document.createElement('div');
+				markerContent.style.position = 'relative';
+				markerContent.style.width = '48px'; // Double the width
+				markerContent.style.height = '80px'; // Double the height
+
+				markerContent.innerHTML = `
+          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="red" stroke="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pin" style="position: absolute; top: 20px; left: 50%; transform: translateX(-50%);">
+              <path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/>
+              <text x="12" y="11" text-anchor="middle" dy=".3em" font-size="10" font-weight="bold" fill="white">${index + 1}</text> <!-- Increased font size and bold -->
+          </svg>
+        `;
+
 				const marker = new Marker!({
 					map: map,
 					position: location.coords,
 					title: location.location_name,
+					content: markerContent,
 					gmpClickable: true,
 					collisionBehavior: google.maps.CollisionBehavior.REQUIRED_AND_HIDES_OPTIONAL
 				});
@@ -547,7 +585,7 @@
 						</div>
 						{#if selectedLocation.brief_description}
 							<div>
-								<h3 class="italic text-gray-900">Description</h3>
+								<h3 class="italic underline text-gray-900">Description</h3>
 								<p class="text-gray-700">{selectedLocation.brief_description}</p>
 							</div>
 						{/if}
@@ -563,7 +601,7 @@
 							</div>
 							{#if selectedLocation.brief_description}
 								<div class="w-2/3 px-6 flex flex-col justify-center">
-									<h3 class="italic text-gray-900">Description</h3>
+									<h3 class="italic underline text-gray-900">Description</h3>
 									<p class="text-gray-700">{selectedLocation.brief_description}</p>
 								</div>
 							{/if}
@@ -574,13 +612,13 @@
 				<div class="flex justify-between">
 					{#if selectedLocation.address}
 						<div class="w-1/2">
-							<h3 class="italic text-gray-900">Address</h3>
+							<h3 class="italic underline text-gray-900">Address</h3>
 							<p class="text-gray-700">{selectedLocation.address}</p>
 						</div>
 					{/if}
 					{#if selectedLocation.occupant}
 						<div class="w-1/2">
-							<h3 class="italic text-gray-900">Occupant</h3>
+							<h3 class="italic underline text-gray-900">Occupant</h3>
 							<p class="text-gray-700">{selectedLocation.occupant}</p>
 						</div>
 					{/if}
@@ -588,8 +626,8 @@
 
 				{#if selectedLocation.audio_url}
 					<div>
-						<h3 class="italic text-gray-900">Audio Guide</h3>
-						<audio controls class="w-full mt-2">
+						<h3 class="italic underline text-gray-900">Audio Guide</h3>
+						<audio controls class="w-full mt-0.5">
 							<source src={audios[selectedLocation.audio_url]?.default} type="audio/mpeg" />
 							Your browser does not support the audio element.
 						</audio>
